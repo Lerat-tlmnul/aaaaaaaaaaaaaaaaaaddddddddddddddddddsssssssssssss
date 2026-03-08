@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Brother's Market | SECURE CLOUD</title>
+    <title>Brother's Market | CLOUD PRO</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script>
@@ -21,6 +21,7 @@
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
         .glass { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(0,0,0,0.05); }
+        .product-card:hover .img-zoom { transform: scale(1.05); }
         #loader { transition: opacity 0.5s ease; }
     </style>
 </head>
@@ -29,7 +30,7 @@
     <!-- CHARGEMENT -->
     <div id="loader" class="fixed inset-0 z-[999] bg-white flex flex-col items-center justify-center text-center px-6">
         <div id="loader-icon" class="w-12 h-12 border-4 border-slate-200 border-t-primary-600 rounded-full animate-spin mb-4"></div>
-        <h2 id="loader-status" class="text-xl font-black tracking-tighter uppercase">Initialisation...</h2>
+        <h2 id="loader-status" class="text-xl font-black tracking-tighter uppercase">Chargement du Cloud...</h2>
         <p id="loader-error" class="text-red-500 font-bold mt-4 hidden text-xs bg-red-50 p-4 rounded-lg border border-red-100 max-w-sm"></p>
     </div>
 
@@ -51,28 +52,19 @@
 
     <main id="main-content" class="pt-24 pb-12 px-4 max-w-7xl mx-auto hidden">
         
-        <!-- AUTHENTIFICATION (Login / Register) -->
+        <!-- AUTHENTIFICATION -->
         <section id="view-auth" class="flex items-center justify-center py-10">
             <div class="w-full max-w-md bg-white p-2 rounded-[2.5rem] shadow-2xl border border-slate-100">
-                <!-- TABS -->
                 <div class="flex p-2 gap-2 mb-6">
                     <button id="tab-login" onclick="toggleAuthTab('login')" class="flex-1 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest bg-primary-600 text-white transition-all">Connexion</button>
                     <button id="tab-register" onclick="toggleAuthTab('register')" class="flex-1 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest bg-slate-50 text-slate-400 transition-all">Créer Compte</button>
                 </div>
-                
                 <div class="px-8 pb-8 space-y-4">
-                    <h2 id="auth-title" class="text-3xl font-black mb-6 tracking-tighter text-center">Ravi de vous revoir</h2>
-                    
+                    <h2 id="auth-title" class="text-3xl font-black mb-6 tracking-tighter text-center italic underline">Bienvenue</h2>
                     <div class="space-y-4">
-                        <div class="relative">
-                            <i class="fas fa-user absolute left-4 top-1/2 -translate-y-1/2 text-slate-300"></i>
-                            <input type="text" id="auth-user" placeholder="Nom d'utilisateur" class="w-full pl-12 p-4 rounded-xl bg-slate-50 border-2 border-transparent focus:border-primary-500 outline-none font-bold">
-                        </div>
-                        <div class="relative">
-                            <i class="fas fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-slate-300"></i>
-                            <input type="password" id="auth-pass" placeholder="Mot de passe" class="w-full pl-12 p-4 rounded-xl bg-slate-50 border-2 border-transparent focus:border-primary-500 outline-none font-bold">
-                        </div>
-                        <button id="auth-btn" onclick="handleAuth()" class="w-full py-4 bg-primary-600 text-white font-black rounded-xl shadow-lg hover:bg-primary-700 transition active:scale-95 uppercase tracking-widest text-xs">Accéder au Market</button>
+                        <input type="text" id="auth-user" placeholder="Nom d'utilisateur" class="w-full p-4 rounded-xl bg-slate-50 border-2 border-transparent focus:border-primary-500 outline-none font-bold">
+                        <input type="password" id="auth-pass" placeholder="Mot de passe" class="w-full p-4 rounded-xl bg-slate-50 border-2 border-transparent focus:border-primary-500 outline-none font-bold">
+                        <button id="auth-btn" onclick="handleAuth()" class="w-full py-4 bg-primary-600 text-white font-black rounded-xl shadow-lg hover:bg-primary-700 transition active:scale-95 uppercase tracking-widest text-[10px]">Accéder au Market</button>
                     </div>
                 </div>
             </div>
@@ -81,55 +73,64 @@
         <!-- BOUTIQUE -->
         <section id="view-shop" class="hidden">
             <div class="flex justify-between items-center mb-10">
-                <h1 class="text-4xl font-black tracking-tight italic underline">Le Stock.</h1>
-                <button onclick="toggleCart(true)" class="relative p-4 bg-white rounded-2xl shadow-lg text-primary-600">
-                    <i class="fas fa-shopping-basket"></i>
-                    <span id="cart-count" class="absolute -top-2 -right-2 w-6 h-6 bg-primary-600 text-white text-[10px] font-black rounded-full flex items-center justify-center border-2 border-white">0</span>
+                <div>
+                    <h1 class="text-4xl font-black tracking-tight italic underline">Le Stock.</h1>
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Frais de livraison : 0.50€ fixes</p>
+                </div>
+                <button onclick="toggleCart(true)" class="relative p-5 bg-white rounded-3xl shadow-xl text-primary-600 hover:scale-105 transition">
+                    <i class="fas fa-shopping-basket text-xl"></i>
+                    <span id="cart-count" class="absolute -top-2 -right-2 w-7 h-7 bg-primary-600 text-white text-[10px] font-black rounded-full flex items-center justify-center border-2 border-white shadow-lg">0</span>
                 </button>
             </div>
             <div id="product-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>
-            <div id="no-products" class="hidden text-center py-20 bg-white rounded-3xl border border-dashed border-slate-300">
-                <p class="font-bold text-slate-400 uppercase text-xs tracking-widest italic">Le stock est vide</p>
+            <div id="no-products" class="hidden text-center py-20 bg-white rounded-[3rem] border-2 border-dashed border-slate-200">
+                <p class="font-bold text-slate-300 uppercase text-xs tracking-widest">Le stock est vide</p>
             </div>
         </section>
 
         <!-- ADMIN -->
         <section id="view-admin" class="hidden space-y-10">
-            <div class="bg-primary-600 p-8 rounded-[2rem] text-white shadow-2xl">
-                <h2 class="text-2xl font-black mb-6 italic underline">Contrôle du Stock Cloud</h2>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <input type="text" id="adm-n" placeholder="Nom du produit" class="p-4 rounded-xl bg-white/10 border border-white/20 outline-none font-bold placeholder:text-white/50 text-white">
-                    <input type="number" id="adm-p" step="0.01" placeholder="Prix (€)" class="p-4 rounded-xl bg-white/10 border border-white/20 outline-none font-bold placeholder:text-white/50 text-white">
-                    <input type="number" id="adm-s" placeholder="Quantité" class="p-4 rounded-xl bg-white/10 border border-white/20 outline-none font-bold placeholder:text-white/50 text-white">
-                    <button onclick="adminAdd()" class="md:col-span-3 py-4 bg-white text-primary-600 font-black rounded-xl uppercase tracking-widest text-xs hover:bg-slate-100 transition">Ajouter au Stock</button>
+            <div class="bg-slate-900 p-8 rounded-[2.5rem] text-white shadow-2xl relative overflow-hidden">
+                <div class="relative z-10">
+                    <h2 class="text-2xl font-black mb-6 italic underline">Nouveau Produit</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <input type="text" id="adm-n" placeholder="Nom" class="p-4 rounded-xl bg-white/10 border border-white/20 outline-none font-bold text-white placeholder:text-white/30">
+                        <input type="number" id="adm-p" step="0.01" placeholder="Prix (€)" class="p-4 rounded-xl bg-white/10 border border-white/20 outline-none font-bold text-white placeholder:text-white/30">
+                        <input type="number" id="adm-s" placeholder="Stock" class="p-4 rounded-xl bg-white/10 border border-white/20 outline-none font-bold text-white placeholder:text-white/30">
+                        <input type="text" id="adm-i" placeholder="URL Image (Optionnel)" class="p-4 rounded-xl bg-white/10 border border-white/20 outline-none font-bold text-white placeholder:text-white/30">
+                        <button onclick="adminAdd()" class="lg:col-span-4 py-4 bg-primary-600 text-white font-black rounded-xl uppercase tracking-widest text-[10px] hover:bg-primary-500 transition shadow-lg shadow-primary-500/20">Ajouter au Cloud</button>
+                    </div>
                 </div>
             </div>
+
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
-                <div><h3 class="text-xl font-black mb-6 uppercase tracking-widest flex items-center gap-2"><i class="fas fa-box text-primary-600"></i> Inventaire</h3><div id="adm-inventory" class="space-y-3"></div></div>
-                <div><h3 class="text-xl font-black mb-6 uppercase tracking-widest text-primary-600 flex items-center gap-2"><i class="fas fa-bell"></i> Commandes Live</h3><div id="adm-orders" class="space-y-4"></div></div>
+                <div>
+                    <h3 class="text-xl font-black mb-6 uppercase tracking-widest flex items-center gap-2"><i class="fas fa-boxes text-primary-600"></i> Gestion Stock</h3>
+                    <div id="adm-inventory" class="space-y-4"></div>
+                </div>
+                <div>
+                    <h3 class="text-xl font-black mb-6 uppercase tracking-widest text-primary-600 flex items-center gap-2"><i class="fas fa-receipt"></i> Commandes</h3>
+                    <div id="adm-orders" class="space-y-4"></div>
+                </div>
             </div>
         </section>
 
         <!-- MES COMMANDES -->
         <section id="view-orders" class="hidden max-w-2xl mx-auto">
-            <h2 class="text-2xl font-black mb-8 italic underline">Mes achats</h2>
+            <h2 class="text-2xl font-black mb-8 italic underline text-center">Historique Achats</h2>
             <div id="my-orders" class="space-y-4"></div>
         </section>
     </main>
 
     <!-- PANIER -->
-    <div id="cart-panel" class="fixed inset-y-0 right-0 w-full max-w-sm bg-white shadow-2xl z-[100] transform translate-x-full transition-transform duration-300 p-8 flex flex-col">
-        <div class="flex justify-between items-center mb-8"><h2 class="text-2xl font-black">Mon Panier</h2><button onclick="toggleCart(false)" class="text-slate-400 hover:text-black"><i class="fas fa-times text-xl"></i></button></div>
-        <div id="cart-items" class="flex-1 overflow-y-auto space-y-4"></div>
-        <div class="pt-6 border-t mt-6">
-            <label class="block text-[10px] font-black uppercase text-slate-400 mb-2">Lieu de livraison</label>
-            <select id="cart-spot" class="w-full p-4 bg-slate-50 rounded-xl mb-4 font-bold outline-none border border-slate-200">
-                <option>Grand caillou</option>
-                <option>Petits cailloux</option>
-                <option>Les sacs</option>
-            </select>
-            <div class="flex justify-between items-center mb-6"><span class="font-bold text-slate-400">Total + Service</span><span id="cart-total" class="text-3xl font-black text-primary-600">0.00€</span></div>
-            <button onclick="sendOrder()" class="w-full py-4 bg-primary-600 text-white font-black rounded-xl shadow-xl hover:bg-primary-700 transition">PAYER MAINTENANT</button>
+    <div id="cart-panel" class="fixed inset-y-0 right-0 w-full max-w-sm bg-white shadow-2xl z-[100] transform translate-x-full transition-transform duration-500 p-8 flex flex-col rounded-l-[3rem]">
+        <div class="flex justify-between items-center mb-10"><h2 class="text-2xl font-black italic">Ton Panier</h2><button onclick="toggleCart(false)" class="w-10 h-10 flex items-center justify-center bg-slate-50 rounded-full text-slate-400 hover:text-black"><i class="fas fa-times"></i></button></div>
+        <div id="cart-items" class="flex-1 overflow-y-auto space-y-4 pr-2"></div>
+        <div class="pt-8 border-t mt-8 bg-white">
+            <div class="flex justify-between items-center mb-2"><span class="font-bold text-slate-400 text-xs">Articles</span><span id="cart-subtotal" class="font-black">0.00€</span></div>
+            <div class="flex justify-between items-center mb-6"><span class="font-bold text-slate-400 text-xs">Livraison (fixe)</span><span class="font-black text-primary-600">0.50€</span></div>
+            <div class="flex justify-between items-center mb-8"><span class="font-black text-lg">TOTAL</span><span id="cart-total" class="text-3xl font-black text-slate-900 underline">0.50€</span></div>
+            <button onclick="sendOrder()" class="w-full py-5 bg-primary-600 text-white font-black rounded-2xl shadow-2xl shadow-primary-500/30 hover:bg-primary-700 transition active:scale-95 uppercase tracking-widest text-xs">Valider la commande</button>
         </div>
     </div>
 
@@ -138,7 +139,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, doc, setDoc, getDoc, deleteDoc, onSnapshot, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, doc, setDoc, getDoc, deleteDoc, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const config = {
             apiKey: "AIzaSyAoaOJ2K2_mR59CejL69IolD9775BQrJ_0",
@@ -161,7 +162,7 @@
 
         let STATE = {
             user: JSON.parse(localStorage.getItem('bm_session')),
-            authMode: 'login', // login | register
+            authMode: 'login',
             products: [],
             orders: [],
             cart: [],
@@ -182,14 +183,8 @@
                 STATE.products = snap.docs.map(d => ({id: d.id, ...d.data()}));
                 renderShop();
                 if(STATE.user?.role === 'admin') renderAdmin();
-                
-                if (!STATE.isLoaded) {
-                    STATE.isLoaded = true;
-                    hideLoader();
-                    initAppUI();
-                }
+                if (!STATE.isLoaded) { STATE.isLoaded = true; hideLoader(); initAppUI(); }
             });
-
             onSnapshot(ordersRef, (snap) => {
                 STATE.orders = snap.docs.map(d => ({id: d.id, ...d.data()})).sort((a,b) => b.timestamp - a.timestamp);
                 renderMyOrders();
@@ -202,86 +197,63 @@
                 document.getElementById('nav').classList.remove('hidden');
                 document.getElementById('nav-admin').classList.toggle('hidden', STATE.user.role !== 'admin');
                 showView('shop');
-            } else { 
-                showView('auth'); 
-            }
+            } else { showView('auth'); }
         }
-
-        // --- AUTH LOGIC ---
 
         window.toggleAuthTab = (mode) => {
             STATE.authMode = mode;
-            const isLogin = mode === 'login';
-            document.getElementById('tab-login').className = isLogin ? 'flex-1 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest bg-primary-600 text-white transition-all' : 'flex-1 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest bg-slate-50 text-slate-400 transition-all';
-            document.getElementById('tab-register').className = !isLogin ? 'flex-1 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest bg-primary-600 text-white transition-all' : 'flex-1 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest bg-slate-50 text-slate-400 transition-all';
-            document.getElementById('auth-title').innerText = isLogin ? 'Ravi de vous revoir' : 'Créer un compte';
-            document.getElementById('auth-btn').innerText = isLogin ? 'Accéder au Market' : 'S\'inscrire maintenant';
+            const isL = mode === 'login';
+            document.getElementById('tab-login').className = isL ? 'flex-1 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest bg-primary-600 text-white transition-all' : 'flex-1 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest bg-slate-50 text-slate-400';
+            document.getElementById('tab-register').className = !isL ? 'flex-1 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest bg-primary-600 text-white transition-all' : 'flex-1 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest bg-slate-50 text-slate-400';
+            document.getElementById('auth-title').innerText = isL ? 'Heureux de vous revoir' : 'Rejoindre le Market';
         };
 
         window.handleAuth = async () => {
             const u = document.getElementById('auth-user').value.trim();
             const p = document.getElementById('auth-pass').value.trim();
-            if(!u || !p) return notify("Remplis tous les champs", "error");
+            if(!u || !p) return notify("Vérifie tes champs", "error");
 
             if(STATE.authMode === 'register') {
-                // Inscription
                 const userDoc = await getDoc(doc(usersRef, u.toLowerCase()));
-                if(userDoc.exists()) return notify("Ce nom est déjà pris", "error");
-                
-                const newUser = {
-                    username: u,
-                    password: p, // Stockage simple pour démo
-                    role: (u === 'Liam' || u === 'Jules') ? 'admin' : 'user'
-                };
-                await setDoc(doc(usersRef, u.toLowerCase()), newUser);
-                notify("Compte créé ! Connecte-toi.");
+                if(userDoc.exists()) return notify("Déjà pris !", "error");
+                const role = (u === 'Liam' || u === 'Jules') ? 'admin' : 'user';
+                await setDoc(doc(usersRef, u.toLowerCase()), { username: u, password: p, role });
+                notify("Compte prêt ! Connecte-toi.");
                 toggleAuthTab('login');
             } else {
-                // Connexion
                 const userDoc = await getDoc(doc(usersRef, u.toLowerCase()));
-                if(!userDoc.exists()) return notify("Utilisateur inconnu", "error");
-                
-                const data = userDoc.data();
-                if(data.password !== p) return notify("Mot de passe incorrect", "error");
-                
-                STATE.user = { user: data.username, role: data.role };
+                if(!userDoc.exists() || userDoc.data().password !== p) return notify("Erreur d'accès", "error");
+                STATE.user = { user: userDoc.data().username, role: userDoc.data().role };
                 localStorage.setItem('bm_session', JSON.stringify(STATE.user));
                 initAppUI();
-                notify("Heureux de vous voir, " + data.username);
+                notify("Bienvenue " + STATE.user.user);
             }
         };
 
         window.logout = () => { localStorage.clear(); location.reload(); };
 
-        // --- UI & SHOP LOGIC ---
-
         window.showView = (v) => {
-            ['view-auth', 'view-shop', 'view-admin', 'view-orders'].forEach(id => {
-                const el = document.getElementById(id);
-                if(el) el.classList.add('hidden');
-            });
-            const target = document.getElementById(`view-${v}`);
-            if(target) target.classList.remove('hidden');
+            ['view-auth', 'view-shop', 'view-admin', 'view-orders'].forEach(id => document.getElementById(id)?.classList.add('hidden'));
+            document.getElementById(`view-${v}`)?.classList.remove('hidden');
         };
 
         function renderShop() {
             const list = document.getElementById('product-list');
             const empty = document.getElementById('no-products');
-            if(!STATE.products.length) {
-                list.innerHTML = "";
-                empty.classList.remove('hidden');
-                return;
-            }
+            if(!STATE.products.length) { list.innerHTML = ""; empty.classList.remove('hidden'); return; }
             empty.classList.add('hidden');
             list.innerHTML = STATE.products.map(p => `
-                <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm hover:shadow-md transition-all">
-                    <h3 class="font-black text-lg italic">${p.name}</h3>
-                    <p class="text-2xl font-black text-primary-600 my-4">${p.price.toFixed(2)}€</p>
-                    <div class="flex items-center justify-between">
-                        <span class="text-[10px] font-black uppercase ${p.stock <= 0 ? 'text-red-500' : 'text-slate-400'}">
-                            ${p.stock <= 0 ? 'Rupture' : 'Dispo: ' + p.stock}
-                        </span>
-                        <button onclick="addToCart('${p.id}')" ${p.stock <= 0 ? 'disabled' : ''} class="px-4 py-2 bg-slate-900 text-white text-[10px] font-black rounded-lg uppercase disabled:opacity-20 transition active:scale-95">Prendre</button>
+                <div class="product-card bg-white p-4 rounded-[2.5rem] border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-300">
+                    <div class="w-full aspect-square bg-slate-50 rounded-[2rem] mb-4 overflow-hidden relative">
+                        ${p.image ? `<img src="${p.image}" class="w-full h-full object-cover img-zoom transition-transform duration-500" onerror="this.src='https://placehold.co/400x400/f8fafc/0ea5e9?text=${p.name}'">` : `<div class="w-full h-full flex items-center justify-center text-slate-200"><i class="fas fa-image text-4xl"></i></div>`}
+                        ${p.stock <= 0 ? `<div class="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center font-black text-red-500 uppercase tracking-widest text-[10px]">Rupture de stock</div>` : ''}
+                    </div>
+                    <div class="px-2">
+                        <h3 class="font-black text-lg truncate italic underline">${p.name}</h3>
+                        <div class="flex items-end justify-between mt-3">
+                            <p class="text-2xl font-black text-primary-600">${p.price.toFixed(2)}€</p>
+                            <button onclick="addToCart('${p.id}')" ${p.stock <= 0 ? 'disabled' : ''} class="w-10 h-10 bg-slate-900 text-white rounded-2xl flex items-center justify-center disabled:opacity-20 active:scale-90 transition shadow-lg"><i class="fas fa-plus text-xs"></i></button>
+                        </div>
                     </div>
                 </div>
             `).join('');
@@ -298,15 +270,20 @@
         function updateCartUI() {
             const count = STATE.cart.reduce((a,b) => a+b.qty, 0);
             document.getElementById('cart-count').innerText = count;
-            const total = STATE.cart.reduce((a,b) => a + (b.price*b.qty), 0) + (STATE.cart.length > 0 ? 0.5 : 0);
+            const subtotal = STATE.cart.reduce((a,b) => a + (b.price*b.qty), 0);
+            const total = subtotal + (STATE.cart.length > 0 ? 0.5 : 0);
+            document.getElementById('cart-subtotal').innerText = subtotal.toFixed(2) + "€";
             document.getElementById('cart-total').innerText = total.toFixed(2) + "€";
             document.getElementById('cart-items').innerHTML = STATE.cart.map(i => `
-                <div class="flex justify-between items-center bg-slate-50 p-4 rounded-xl border border-slate-100">
-                    <div class="flex flex-col">
-                        <span class="font-black text-sm italic">${i.name}</span>
-                        <span class="text-[10px] font-bold text-slate-400">Quantité: ${i.qty}</span>
+                <div class="flex gap-4 items-center bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                    <div class="w-12 h-12 rounded-xl bg-white overflow-hidden flex-shrink-0">
+                        <img src="${i.image || 'https://placehold.co/50x50'}" class="w-full h-full object-cover">
                     </div>
-                    <button onclick="removeFromCart('${i.id}')" class="text-red-400 hover:text-red-600 p-2"><i class="fas fa-trash-alt"></i></button>
+                    <div class="flex-1">
+                        <p class="font-black text-xs italic underline">${i.name}</p>
+                        <p class="text-[10px] font-bold text-slate-400">Qté: ${i.qty}</p>
+                    </div>
+                    <button onclick="removeFromCart('${i.id}')" class="text-slate-300 hover:text-red-500 transition"><i class="fas fa-trash-alt"></i></button>
                 </div>
             `).join('');
         }
@@ -318,23 +295,13 @@
             if(!STATE.cart.length) return;
             try {
                 const orderId = Date.now().toString();
-                const order = { 
-                    id: orderId, 
-                    user: STATE.user.user, 
-                    items: STATE.cart, 
-                    total: parseFloat(document.getElementById('cart-total').innerText), 
-                    spot: document.getElementById('cart-spot').value, 
-                    status: 'En attente', 
-                    timestamp: Date.now(), 
-                    date: new Date().toLocaleTimeString('fr-FR') 
-                };
+                const total = parseFloat(document.getElementById('cart-total').innerText);
+                const order = { id: orderId, user: STATE.user.user, items: STATE.cart, total, status: 'En attente', timestamp: Date.now(), date: new Date().toLocaleTimeString('fr-FR') };
                 await setDoc(doc(ordersRef, orderId), order);
-                
                 for(let item of STATE.cart) {
                     const p = STATE.products.find(x => x.id === item.id);
-                    await setDoc(doc(productsRef, p.id), {...p, stock: p.stock - item.qty});
+                    await updateDoc(doc(productsRef, p.id), { stock: p.stock - item.qty });
                 }
-
                 STATE.cart = []; updateCartUI(); toggleCart(false); showView('orders');
                 notify("COMMANDE ENVOYÉE !");
             } catch(e) { notify("Erreur Cloud", "error"); }
@@ -344,47 +311,65 @@
             const n = document.getElementById('adm-n').value.trim();
             const p = parseFloat(document.getElementById('adm-p').value);
             const s = parseInt(document.getElementById('adm-s').value);
-            if(!n || isNaN(p)) return;
+            const i = document.getElementById('adm-i').value.trim();
+            if(!n || isNaN(p)) return notify("Champs manquants", "error");
             const id = Date.now().toString();
-            await setDoc(doc(productsRef, id), {id, name:n, price:p, stock:s || 0, timestamp: Date.now()});
-            document.getElementById('adm-n').value = ''; 
-            document.getElementById('adm-p').value = ''; 
-            document.getElementById('adm-s').value = '';
-            notify("Stock mis à jour");
+            await setDoc(doc(productsRef, id), { id, name: n, price: p, stock: s || 0, image: i, timestamp: Date.now() });
+            ['adm-n', 'adm-p', 'adm-s', 'adm-i'].forEach(id => document.getElementById(id).value = '');
+            notify("Produit ajouté");
         };
 
-        window.adminDel = async (id) => { if(confirm("Supprimer ?")) await deleteDoc(doc(productsRef, id)); };
-        window.orderDone = async (id) => {
-            const o = STATE.orders.find(x => x.id === id);
-            await setDoc(doc(ordersRef, id), {...o, status: 'Livré'});
-            notify("Commande livrée");
+        window.adminUpdateStock = async (id, delta) => {
+            const p = STATE.products.find(x => x.id === id);
+            const newStock = Math.max(0, p.stock + delta);
+            await updateDoc(doc(productsRef, id), { stock: newStock });
         };
+
+        window.adminUpdatePrice = async (id) => {
+            const p = STATE.products.find(x => x.id === id);
+            const newPrice = prompt("Nouveau prix (€) :", p.price);
+            if(newPrice !== null && !isNaN(newPrice)) {
+                await updateDoc(doc(productsRef, id), { price: parseFloat(newPrice) });
+                notify("Prix mis à jour");
+            }
+        };
+
+        window.adminDel = async (id) => { if(confirm("Supprimer ce produit ?")) await deleteDoc(doc(productsRef, id)); };
+        window.orderDone = async (id) => { await updateDoc(doc(ordersRef, id), { status: 'Livré' }); notify("Livré !"); };
         window.orderDel = async (id) => await deleteDoc(doc(ordersRef, id));
 
         function renderAdmin() {
             const inv = document.getElementById('adm-inventory');
             const ord = document.getElementById('adm-orders');
             if(inv) inv.innerHTML = STATE.products.map(p => `
-                <div class="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-100 font-bold text-sm">
-                    <div class="flex flex-col">
-                        <span class="italic underline">${p.name}</span>
-                        <span class="text-[10px] text-slate-400">Stk: ${p.stock} | ${p.price.toFixed(2)}€</span>
+                <div class="bg-white p-4 rounded-3xl border border-slate-100 flex items-center gap-4 shadow-sm">
+                    <img src="${p.image || 'https://placehold.co/50'}" class="w-10 h-10 rounded-xl object-cover bg-slate-50">
+                    <div class="flex-1 min-w-0">
+                        <p class="font-black text-xs truncate underline">${p.name}</p>
+                        <p class="text-[10px] font-bold text-primary-600">${p.price.toFixed(2)}€ | Stock: ${p.stock}</p>
                     </div>
-                    <button onclick="adminDel('${p.id}')" class="text-red-400 hover:text-red-600"><i class="fas fa-trash"></i></button>
+                    <div class="flex gap-1">
+                        <button onclick="adminUpdateStock('${p.id}', -1)" class="w-8 h-8 bg-slate-50 rounded-lg text-slate-400 hover:text-red-500"><i class="fas fa-minus text-[10px]"></i></button>
+                        <button onclick="adminUpdateStock('${p.id}', 1)" class="w-8 h-8 bg-slate-50 rounded-lg text-slate-400 hover:text-green-500"><i class="fas fa-plus text-[10px]"></i></button>
+                        <button onclick="adminUpdatePrice('${p.id}')" class="w-8 h-8 bg-slate-50 rounded-lg text-slate-400 hover:text-primary-500"><i class="fas fa-edit text-[10px]"></i></button>
+                        <button onclick="adminDel('${p.id}')" class="w-8 h-8 bg-red-50 rounded-lg text-red-300 hover:text-red-600 ml-1"><i class="fas fa-trash text-[10px]"></i></button>
+                    </div>
                 </div>
             `).join('');
             
             if(ord) ord.innerHTML = STATE.orders.map(o => `
-                <div class="bg-white p-5 rounded-2xl border-2 ${o.status === 'Livré' ? 'border-green-100 opacity-60' : 'border-primary-100 shadow-lg'}">
-                    <div class="flex justify-between mb-3">
-                        <span class="font-black text-xs px-2 py-1 bg-slate-100 rounded text-slate-600 italic underline">${o.user.toUpperCase()}</span>
-                        <span class="font-black text-primary-600">${o.total.toFixed(2)}€</span>
+                <div class="bg-white p-5 rounded-3xl border-2 ${o.status === 'Livré' ? 'border-green-100 opacity-60' : 'border-primary-100 shadow-xl'}">
+                    <div class="flex justify-between items-start mb-3">
+                        <div>
+                            <span class="text-[10px] font-black uppercase text-slate-400 block">${o.date}</span>
+                            <span class="font-black italic underline">${o.user}</span>
+                        </div>
+                        <span class="text-xl font-black text-primary-600">${o.total.toFixed(2)}€</span>
                     </div>
-                    <div class="text-[11px] font-bold text-slate-700 mb-1">Spot: ${o.spot}</div>
-                    <div class="text-[10px] text-slate-400 mb-4 italic">${o.items.map(i => i.qty+'x '+i.name).join(', ')}</div>
+                    <div class="text-[10px] text-slate-500 mb-4 bg-slate-50 p-2 rounded-xl border border-slate-100 italic">${o.items.map(i => i.qty+'x '+i.name).join(', ')}</div>
                     <div class="flex gap-2">
-                        ${o.status === 'En attente' ? `<button onclick="orderDone('${o.id}')" class="flex-1 py-2 bg-green-500 text-white text-[10px] font-black rounded-lg uppercase shadow-md">Livré</button>` : `<span class="flex-1 py-2 text-center text-green-500 text-[10px] font-black uppercase">Terminé</span>`}
-                        <button onclick="orderDel('${o.id}')" class="px-3 bg-slate-100 rounded-lg text-slate-400 hover:text-red-400"><i class="fas fa-trash"></i></button>
+                        ${o.status === 'En attente' ? `<button onclick="orderDone('${o.id}')" class="flex-1 py-3 bg-green-500 text-white text-[10px] font-black rounded-xl uppercase shadow-lg shadow-green-500/20">Valider Livraison</button>` : `<div class="flex-1 py-3 text-center text-green-500 text-[10px] font-black uppercase">Produit Livré</div>`}
+                        <button onclick="orderDel('${o.id}')" class="px-4 bg-slate-100 rounded-xl text-slate-400"><i class="fas fa-trash text-xs"></i></button>
                     </div>
                 </div>
             `).join('');
@@ -394,34 +379,40 @@
             const mine = STATE.orders.filter(o => o.user === STATE.user?.user);
             const container = document.getElementById('my-orders');
             if(container) container.innerHTML = mine.length ? mine.map(o => `
-                <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
-                    <div class="flex justify-between mb-2">
-                        <span class="text-[10px] font-black uppercase text-slate-400">${o.date}</span>
-                        <span class="text-[10px] font-black uppercase ${o.status === 'Livré' ? 'text-green-500' : 'text-primary-600 animate-pulse'}">
-                            <i class="fas ${o.status === 'Livré' ? 'fa-check-circle' : 'fa-clock'} mr-1"></i> ${o.status}
-                        </span>
+                <div class="bg-white p-6 rounded-[2.5rem] border border-slate-100 shadow-sm relative overflow-hidden">
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="text-[10px] font-black text-slate-300 uppercase">${o.date}</span>
+                        <div class="px-3 py-1 rounded-full ${o.status === 'Livré' ? 'bg-green-50 text-green-500' : 'bg-primary-50 text-primary-600 animate-pulse'} text-[9px] font-black uppercase">
+                            ${o.status}
+                        </div>
                     </div>
-                    <p class="font-bold text-sm mb-2 text-slate-700 italic">${o.items.map(i => i.qty+'x '+i.name).join(', ')}</p>
-                    <p class="text-xl font-black text-primary-600">${o.total.toFixed(2)}€</p>
+                    <p class="font-bold text-sm mb-4 italic underline">${o.items.map(i => i.qty+'x '+i.name).join(', ')}</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-2xl font-black text-primary-600">${o.total.toFixed(2)}€</span>
+                        <span class="text-[8px] font-bold text-slate-300 uppercase tracking-widest">Payé via Cloud</span>
+                    </div>
                 </div>
-            `).join('') : '<p class="text-center text-slate-300 font-bold py-10 italic">Rien ici pour le moment</p>';
+            `).join('') : '<div class="py-20 text-center text-slate-300 font-bold uppercase text-xs italic tracking-widest">Aucune commande</div>';
         }
 
         window.notify = (m, type="success") => {
             const n = document.createElement('div');
-            n.className = `p-4 rounded-xl ${type==='error'?'bg-red-500':'bg-slate-900'} text-white font-black text-[9px] uppercase tracking-widest shadow-2xl transform transition-all duration-300 translate-y-0 opacity-100`;
+            n.className = `p-4 rounded-2xl ${type==='error'?'bg-red-500':'bg-slate-900'} text-white font-black text-[10px] uppercase tracking-widest shadow-2xl transform transition-all duration-300 translate-y-0 opacity-100`;
             n.innerText = m;
             document.getElementById('notifier').appendChild(n);
             setTimeout(() => { n.style.opacity = '0'; setTimeout(() => n.remove(), 300); }, 3000);
         };
 
+        function showLoaderError(msg) {
+            document.getElementById('loader-error').innerText = msg;
+            document.getElementById('loader-error').classList.remove('hidden');
+            document.getElementById('loader-status').innerText = "Erreur de connexion";
+        }
+
         function hideLoader() {
-            const loader = document.getElementById('loader');
-            loader.style.opacity = '0';
-            setTimeout(() => {
-                loader.style.display = 'none';
-                document.getElementById('main-content').classList.remove('hidden');
-            }, 500);
+            const l = document.getElementById('loader');
+            l.style.opacity = '0';
+            setTimeout(() => { l.style.display = 'none'; document.getElementById('main-content').classList.remove('hidden'); }, 500);
         }
 
         boot();
