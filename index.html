@@ -3,654 +3,428 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Brother's Market | Admin Suite</title>
+    <title>Brother's Market | SECURE CLOUD</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script>
         tailwind.config = {
-            darkMode: 'class',
             theme: {
                 extend: {
                     colors: {
-                        primary: { 50: '#f0f9ff', 100: '#e0f2fe', 200: '#bae6fd', 300: '#7dd3fc', 400: '#38bdf8', 500: '#0ea5e9', 600: '#0284c7', 700: '#0369a1', 800: '#075985', 900: '#0c4a6e' },
-                        accent: '#6366f1'
-                    },
-                    borderRadius: { 'xl': '1rem', '2xl': '1.5rem', '3xl': '2rem' }
+                        primary: { 50: '#f0f9ff', 100: '#e0f2fe', 200: '#bae6fd', 300: '#7dd3fc', 400: '#38bdf8', 500: '#0ea5e9', 600: '#0284c7', 700: '#0369a1', 800: '#075985', 900: '#0c4a6e' }
+                    }
                 }
             }
         }
     </script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
-        .glass { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); }
-        .dark .glass { background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255, 255, 255, 0.05); }
-        .admin-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .admin-card:hover { transform: translateY(-2px); box-shadow: 0 10px 20px -5px rgba(0,0,0,0.1); }
-        #loader { transition: opacity 0.3s ease; }
+        .glass { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(0,0,0,0.05); }
+        #loader { transition: opacity 0.5s ease; }
     </style>
 </head>
-<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen transition-colors duration-300 relative">
+<body class="bg-slate-50 text-slate-900 min-h-screen">
 
-    <!-- Loading Overlay -->
-    <div id="loader" class="fixed inset-0 z-[200] bg-slate-50 dark:bg-slate-950 flex flex-col items-center justify-center">
-        <div class="w-16 h-16 border-4 border-primary-200 border-t-primary-600 rounded-full animate-spin mb-4"></div>
-        <p class="font-bold text-slate-500 animate-pulse">Initialisation...</p>
+    <!-- CHARGEMENT -->
+    <div id="loader" class="fixed inset-0 z-[999] bg-white flex flex-col items-center justify-center text-center px-6">
+        <div id="loader-icon" class="w-12 h-12 border-4 border-slate-200 border-t-primary-600 rounded-full animate-spin mb-4"></div>
+        <h2 id="loader-status" class="text-xl font-black tracking-tighter uppercase">Initialisation...</h2>
+        <p id="loader-error" class="text-red-500 font-bold mt-4 hidden text-xs bg-red-50 p-4 rounded-lg border border-red-100 max-w-sm"></p>
     </div>
 
-    <!-- Navigation -->
-    <nav id="nav" class="fixed top-0 w-full z-50 glass border-b border-slate-200 dark:border-slate-800 hidden">
-        <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+    <!-- NAVIGATION -->
+    <nav id="nav" class="fixed top-0 w-full z-50 glass h-16 hidden">
+        <div class="max-w-7xl mx-auto px-4 h-full flex items-center justify-between">
             <div class="flex items-center gap-2 cursor-pointer" onclick="showView('shop')">
-                <div class="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center text-white shadow-lg shadow-primary-500/30">
-                    <i class="fas fa-bolt text-xs"></i>
-                </div>
-                <span class="text-xl font-extrabold tracking-tight">Brother's <span class="text-primary-600">Market</span></span>
+                <div class="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center text-white shadow-lg"><i class="fas fa-bolt text-xs"></i></div>
+                <span class="text-xl font-black">Brother's <span class="text-primary-600">Market</span></span>
             </div>
-
             <div class="flex items-center gap-6">
-                <button onclick="showView('shop')" class="text-sm font-bold hover:text-primary-500 transition">Boutique</button>
-                <button onclick="showView('orders')" class="text-sm font-bold hover:text-primary-500 transition">Commandes</button>
-                <button id="nav-admin" onclick="showView('admin')" class="hidden bg-primary-100 dark:bg-primary-900/30 text-primary-600 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest border border-primary-200 dark:border-primary-800">Panel Admin</button>
-                <div class="h-6 w-px bg-slate-200 dark:bg-slate-800"></div>
-                <button onclick="logout()" class="text-slate-400 hover:text-red-500 transition"><i class="fas fa-power-off"></i></button>
+                <button onclick="showView('shop')" class="text-[10px] font-black uppercase tracking-widest">Boutique</button>
+                <button onclick="showView('orders')" class="text-[10px] font-black uppercase tracking-widest">Commandes</button>
+                <button id="nav-admin" onclick="showView('admin')" class="hidden bg-slate-900 text-white px-4 py-2 rounded-full text-[9px] font-black uppercase tracking-widest">Admin</button>
+                <button onclick="logout()" class="text-slate-400 hover:text-red-500 ml-2"><i class="fas fa-power-off"></i></button>
             </div>
         </div>
     </nav>
 
-    <main id="app-container" class="pt-24 pb-12 px-4 max-w-7xl mx-auto hidden">
-        <!-- AUTH VIEW -->
-        <section id="view-auth" class="flex items-center justify-center py-20">
-            <div class="w-full max-w-md bg-white dark:bg-slate-900 p-10 rounded-3xl shadow-2xl border border-slate-100 dark:border-slate-800">
-                <div class="text-center mb-8">
-                    <h2 id="auth-title" class="text-3xl font-black mb-2">Connexion</h2>
-                    <p class="text-slate-500 text-sm font-medium">Entrez vos identifiants Brother's</p>
+    <main id="main-content" class="pt-24 pb-12 px-4 max-w-7xl mx-auto hidden">
+        
+        <!-- AUTHENTIFICATION (Login / Register) -->
+        <section id="view-auth" class="flex items-center justify-center py-10">
+            <div class="w-full max-w-md bg-white p-2 rounded-[2.5rem] shadow-2xl border border-slate-100">
+                <!-- TABS -->
+                <div class="flex p-2 gap-2 mb-6">
+                    <button id="tab-login" onclick="toggleAuthTab('login')" class="flex-1 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest bg-primary-600 text-white transition-all">Connexion</button>
+                    <button id="tab-register" onclick="toggleAuthTab('register')" class="flex-1 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest bg-slate-50 text-slate-400 transition-all">Créer Compte</button>
                 </div>
-                <div class="space-y-4">
-                    <input type="text" id="login-user" placeholder="Nom d'utilisateur" class="w-full p-4 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-primary-500 outline-none transition font-semibold">
-                    <input type="password" id="login-pass" placeholder="Mot de passe" class="w-full p-4 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-primary-500 outline-none transition font-semibold">
-                    <button onclick="handleLogin()" class="w-full py-4 bg-primary-600 text-white font-black rounded-xl shadow-lg shadow-primary-500/20 hover:bg-primary-700 transition active:scale-95">Se connecter</button>
-                    <button onclick="toggleAuth()" id="btn-toggle-auth" class="w-full text-center text-xs font-bold text-slate-400 hover:text-primary-500">Pas encore de compte ? Créer un profil</button>
+                
+                <div class="px-8 pb-8 space-y-4">
+                    <h2 id="auth-title" class="text-3xl font-black mb-6 tracking-tighter text-center">Ravi de vous revoir</h2>
+                    
+                    <div class="space-y-4">
+                        <div class="relative">
+                            <i class="fas fa-user absolute left-4 top-1/2 -translate-y-1/2 text-slate-300"></i>
+                            <input type="text" id="auth-user" placeholder="Nom d'utilisateur" class="w-full pl-12 p-4 rounded-xl bg-slate-50 border-2 border-transparent focus:border-primary-500 outline-none font-bold">
+                        </div>
+                        <div class="relative">
+                            <i class="fas fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-slate-300"></i>
+                            <input type="password" id="auth-pass" placeholder="Mot de passe" class="w-full pl-12 p-4 rounded-xl bg-slate-50 border-2 border-transparent focus:border-primary-500 outline-none font-bold">
+                        </div>
+                        <button id="auth-btn" onclick="handleAuth()" class="w-full py-4 bg-primary-600 text-white font-black rounded-xl shadow-lg hover:bg-primary-700 transition active:scale-95 uppercase tracking-widest text-xs">Accéder au Market</button>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <!-- SHOP VIEW -->
+        <!-- BOUTIQUE -->
         <section id="view-shop" class="hidden">
-            <div class="flex justify-between items-end mb-10">
-                <div>
-                    <h1 class="text-4xl font-black tracking-tight mb-2">Boutique</h1>
-                    <p class="text-slate-500 font-medium italic">Faites-vous plaisir, livraison rapide garantie.</p>
-                </div>
-                <button onclick="showCart()" class="relative p-4 bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-800 text-primary-600">
-                    <i class="fas fa-shopping-basket text-xl"></i>
-                    <span id="cart-count" class="absolute -top-2 -right-2 w-6 h-6 bg-primary-600 text-white text-[10px] font-black rounded-full flex items-center justify-center border-2 border-white dark:border-slate-900">0</span>
+            <div class="flex justify-between items-center mb-10">
+                <h1 class="text-4xl font-black tracking-tight italic underline">Le Stock.</h1>
+                <button onclick="toggleCart(true)" class="relative p-4 bg-white rounded-2xl shadow-lg text-primary-600">
+                    <i class="fas fa-shopping-basket"></i>
+                    <span id="cart-count" class="absolute -top-2 -right-2 w-6 h-6 bg-primary-600 text-white text-[10px] font-black rounded-full flex items-center justify-center border-2 border-white">0</span>
                 </button>
             </div>
             <div id="product-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>
+            <div id="no-products" class="hidden text-center py-20 bg-white rounded-3xl border border-dashed border-slate-300">
+                <p class="font-bold text-slate-400 uppercase text-xs tracking-widest italic">Le stock est vide</p>
+            </div>
         </section>
 
-        <!-- CART MODAL -->
-        <div id="cart-modal" class="fixed inset-0 z-[60] hidden bg-slate-950/40 backdrop-blur-sm flex items-center justify-end">
-            <div class="w-full max-w-md h-full bg-white dark:bg-slate-900 shadow-2xl p-8 flex flex-col">
-                <div class="flex items-center justify-between mb-8">
-                    <h2 class="text-2xl font-black">Votre Panier</h2>
-                    <button onclick="hideCart()" class="text-slate-400 hover:text-slate-900"><i class="fas fa-times text-xl"></i></button>
-                </div>
-                <div id="cart-items" class="flex-1 overflow-y-auto space-y-4"></div>
-                <div class="pt-6 border-t border-slate-100 dark:border-slate-800 mt-6">
-                    <div class="mb-4">
-                        <label class="block text-[10px] font-black uppercase text-slate-400 mb-2">Lieu de livraison</label>
-                        <select id="delivery-spot" class="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl font-bold outline-none border border-slate-200 dark:border-slate-700">
-                            <option>Grand caillou</option>
-                            <option>Petits cailloux</option>
-                            <option>Les sacs</option>
-                        </select>
-                    </div>
-                    <div class="flex justify-between items-center mb-6">
-                        <span class="text-slate-500 font-bold">Total (Livr. incluse)</span>
-                        <span id="cart-total" class="text-3xl font-black text-primary-600">0.00€</span>
-                    </div>
-                    <button onclick="checkout()" class="w-full py-4 bg-primary-600 text-white font-black rounded-2xl shadow-xl shadow-primary-500/20 active:scale-95 transition">Commander</button>
+        <!-- ADMIN -->
+        <section id="view-admin" class="hidden space-y-10">
+            <div class="bg-primary-600 p-8 rounded-[2rem] text-white shadow-2xl">
+                <h2 class="text-2xl font-black mb-6 italic underline">Contrôle du Stock Cloud</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <input type="text" id="adm-n" placeholder="Nom du produit" class="p-4 rounded-xl bg-white/10 border border-white/20 outline-none font-bold placeholder:text-white/50 text-white">
+                    <input type="number" id="adm-p" step="0.01" placeholder="Prix (€)" class="p-4 rounded-xl bg-white/10 border border-white/20 outline-none font-bold placeholder:text-white/50 text-white">
+                    <input type="number" id="adm-s" placeholder="Quantité" class="p-4 rounded-xl bg-white/10 border border-white/20 outline-none font-bold placeholder:text-white/50 text-white">
+                    <button onclick="adminAdd()" class="md:col-span-3 py-4 bg-white text-primary-600 font-black rounded-xl uppercase tracking-widest text-xs hover:bg-slate-100 transition">Ajouter au Stock</button>
                 </div>
             </div>
-        </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                <div><h3 class="text-xl font-black mb-6 uppercase tracking-widest flex items-center gap-2"><i class="fas fa-box text-primary-600"></i> Inventaire</h3><div id="adm-inventory" class="space-y-3"></div></div>
+                <div><h3 class="text-xl font-black mb-6 uppercase tracking-widest text-primary-600 flex items-center gap-2"><i class="fas fa-bell"></i> Commandes Live</h3><div id="adm-orders" class="space-y-4"></div></div>
+            </div>
+        </section>
 
-        <!-- ORDERS VIEW -->
+        <!-- MES COMMANDES -->
         <section id="view-orders" class="hidden max-w-2xl mx-auto">
-            <h2 class="text-3xl font-black mb-8">Mes Commandes</h2>
+            <h2 class="text-2xl font-black mb-8 italic underline">Mes achats</h2>
             <div id="my-orders" class="space-y-4"></div>
-        </section>
-
-        <!-- ADMIN VIEW -->
-        <section id="view-admin" class="hidden">
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <!-- PANEL GAUCHE: INVENTAIRE -->
-                <div class="lg:col-span-2 space-y-8">
-                    <div class="bg-primary-600 p-8 rounded-[2.5rem] text-white shadow-2xl shadow-primary-500/30">
-                        <h2 class="text-2xl font-black mb-1">Ajouter un produit</h2>
-                        <p class="text-primary-100 text-sm mb-6">Remplissez l'inventaire en un instant.</p>
-                        <div class="grid grid-cols-2 gap-4">
-                            <input type="text" id="new-p-name" placeholder="Nom de l'article" class="col-span-2 p-4 rounded-2xl bg-white/10 border border-white/20 placeholder:text-white/60 outline-none focus:bg-white/20 transition font-bold">
-                            <input type="number" id="new-p-price" step="0.01" placeholder="Prix (€)" class="p-4 rounded-2xl bg-white/10 border border-white/20 placeholder:text-white/60 outline-none focus:bg-white/20 transition font-bold">
-                            <input type="number" id="new-p-stock" placeholder="Stock initial" class="p-4 rounded-2xl bg-white/10 border border-white/20 placeholder:text-white/60 outline-none focus:bg-white/20 transition font-bold">
-                            <button onclick="adminAddProduct()" class="col-span-2 py-4 bg-white text-primary-600 font-black rounded-2xl hover:shadow-xl transition active:scale-95 uppercase tracking-widest text-xs">Valider l'ajout</button>
-                        </div>
-                    </div>
-
-                    <div class="space-y-4">
-                        <h3 class="text-xl font-black flex items-center gap-2">
-                            <i class="fas fa-boxes-stacked text-primary-600"></i>
-                            Inventaire en direct
-                        </h3>
-                        <div id="admin-inventory" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
-                    </div>
-                </div>
-
-                <!-- PANEL DROIT: COMMANDES GLOBALES -->
-                <div class="space-y-6">
-                    <h3 class="text-xl font-black flex items-center gap-2">
-                        <i class="fas fa-receipt text-primary-600"></i>
-                        Flux des commandes
-                    </h3>
-                    <div id="admin-orders-flow" class="space-y-4"></div>
-                </div>
-            </div>
         </section>
     </main>
 
-    <!-- UI NOTIFIER -->
-    <div id="notifier" class="fixed bottom-6 right-6 z-[100] space-y-2 pointer-events-none"></div>
+    <!-- PANIER -->
+    <div id="cart-panel" class="fixed inset-y-0 right-0 w-full max-w-sm bg-white shadow-2xl z-[100] transform translate-x-full transition-transform duration-300 p-8 flex flex-col">
+        <div class="flex justify-between items-center mb-8"><h2 class="text-2xl font-black">Mon Panier</h2><button onclick="toggleCart(false)" class="text-slate-400 hover:text-black"><i class="fas fa-times text-xl"></i></button></div>
+        <div id="cart-items" class="flex-1 overflow-y-auto space-y-4"></div>
+        <div class="pt-6 border-t mt-6">
+            <label class="block text-[10px] font-black uppercase text-slate-400 mb-2">Lieu de livraison</label>
+            <select id="cart-spot" class="w-full p-4 bg-slate-50 rounded-xl mb-4 font-bold outline-none border border-slate-200">
+                <option>Grand caillou</option>
+                <option>Petits cailloux</option>
+                <option>Les sacs</option>
+            </select>
+            <div class="flex justify-between items-center mb-6"><span class="font-bold text-slate-400">Total + Service</span><span id="cart-total" class="text-3xl font-black text-primary-600">0.00€</span></div>
+            <button onclick="sendOrder()" class="w-full py-4 bg-primary-600 text-white font-black rounded-xl shadow-xl hover:bg-primary-700 transition">PAYER MAINTENANT</button>
+        </div>
+    </div>
+
+    <div id="notifier" class="fixed bottom-6 right-6 z-[110] space-y-2"></div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, doc, setDoc, getDoc, deleteDoc, onSnapshot, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // --- HYBRID STORAGE DETECTION ---
-        // Si le site est déployé en externe, __firebase_config n'existe pas
-        const hasCloudAccess = typeof __firebase_config !== 'undefined' && __firebase_config;
-        let useCloud = false;
-        
-        let app, auth, db, productsRef, ordersRef, fbUser;
-
-        // --- LOCAL DATA STATE ---
-        const localUsers = JSON.parse(localStorage.getItem('bm_users')) || [
-            { user: 'Liam', pass: 'Liam', role: 'admin' },
-            { user: 'Jules', pass: 'Jules', role: 'admin' }
-        ];
-
-        let state = {
-            currentUser: JSON.parse(localStorage.getItem('bm_session')) || null,
-            cart: [],
-            authMode: 'login',
-            currentView: 'shop'
+        const config = {
+            apiKey: "AIzaSyAoaOJ2K2_mR59CejL69IolD9775BQrJ_0",
+            authDomain: "brothers-market-601dd.firebaseapp.com",
+            projectId: "brothers-market-601dd",
+            storageBucket: "brothers-market-601dd.firebasestorage.app",
+            messagingSenderId: "1095476857815",
+            appId: "1:1095476857815:web:2e6f5caf2587e14d9e9992",
+            measurementId: "G-XNZKRYGF70"
         };
 
-        const DB = {
+        const app = initializeApp(config);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const appId = 'brothers-market-v1';
+
+        const productsRef = collection(db, 'artifacts', appId, 'public', 'data', 'products');
+        const ordersRef = collection(db, 'artifacts', appId, 'public', 'data', 'orders');
+        const usersRef = collection(db, 'artifacts', appId, 'public', 'data', 'users');
+
+        let STATE = {
+            user: JSON.parse(localStorage.getItem('bm_session')),
+            authMode: 'login', // login | register
             products: [],
-            orders: []
+            orders: [],
+            cart: [],
+            isLoaded: false
         };
 
-        const saveLocalDB = () => {
-            localStorage.setItem('bm_products', JSON.stringify(DB.products));
-            localStorage.setItem('bm_orders', JSON.stringify(DB.orders));
-        };
-
-        function hideLoader() {
-            document.getElementById('loader').style.opacity = '0';
-            setTimeout(() => {
-                document.getElementById('loader').style.display = 'none';
-                document.getElementById('app-container').classList.remove('hidden');
-            }, 300);
+        async function boot() {
+            try {
+                await signInAnonymously(auth);
+                onAuthStateChanged(auth, (fbUser) => {
+                    if (fbUser) setupListeners();
+                });
+            } catch(e) { showLoaderError(e.message); }
         }
 
-        // --- INITIALIZATION ---
-        const initSystem = async () => {
-            if (hasCloudAccess) {
-                try {
-                    const firebaseConfig = JSON.parse(__firebase_config);
-                    app = initializeApp(firebaseConfig);
-                    auth = getAuth(app);
-                    db = getFirestore(app);
-                    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-                    productsRef = collection(db, 'artifacts', appId, 'public', 'data', 'products');
-                    ordersRef = collection(db, 'artifacts', appId, 'public', 'data', 'orders');
-                    
-                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                        await signInWithCustomToken(auth, __initial_auth_token);
-                    } else {
-                        await signInAnonymously(auth);
-                    }
-                    useCloud = true;
-
-                    onAuthStateChanged(auth, (user) => {
-                        fbUser = user;
-                        if (user) setupCloudListeners();
-                    });
-                } catch (e) {
-                    console.error("Firebase Init Error:", e);
-                    fallbackToLocal();
-                }
-            } else {
-                fallbackToLocal();
-            }
-        };
-
-        function fallbackToLocal() {
-            useCloud = false;
-            // Charger les données du localStorage ou mettre les valeurs par défaut
-            const defaultProducts = [
-                { id: "1", name: 'Kinder Bueno', price: 1.20, stock: 10, timestamp: Date.now() },
-                { id: "2", name: 'Capri-Sun', price: 0.80, stock: 15, timestamp: Date.now() - 1000 },
-                { id: "3", name: 'Oreo Original', price: 1.00, stock: 8, timestamp: Date.now() - 2000 }
-            ];
-            
-            DB.products = JSON.parse(localStorage.getItem('bm_products')) || defaultProducts;
-            DB.orders = JSON.parse(localStorage.getItem('bm_orders')) || [];
-            
-            hideLoader();
-            initAppUI();
-            
-            if(!hasCloudAccess) {
-                setTimeout(() => notify("Mode Local Activé (Hors Cloud)", "warning"), 1000);
-            }
-        }
-
-        // --- CLOUD LISTENERS ---
-        function setupCloudListeners() {
-            onSnapshot(productsRef, (snapshot) => {
-                const loadedProducts = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-                if (loadedProducts.length === 0) seedInitialProducts();
-                else {
-                    DB.products = loadedProducts.sort((a,b) => b.timestamp - a.timestamp);
-                    refreshCurrentView();
-                }
-                hideLoader();
-                initAppUI();
-            }, (error) => {
-                console.error("Erreur sync produits", error);
-                fallbackToLocal();
-            });
-
-            onSnapshot(ordersRef, (snapshot) => {
-                DB.orders = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-                DB.orders.sort((a, b) => b.timestamp - a.timestamp);
-                refreshCurrentView();
-            }, (error) => console.error("Erreur sync commandes", error));
-        }
-
-        async function seedInitialProducts() {
-            const defaults = [
-                { id: "1", name: 'Kinder Bueno', price: 1.20, stock: 10, timestamp: Date.now() },
-                { id: "2", name: 'Capri-Sun', price: 0.80, stock: 15, timestamp: Date.now() - 1000 },
-                { id: "3", name: 'Oreo Original', price: 1.00, stock: 8, timestamp: Date.now() - 2000 }
-            ];
-            for (const p of defaults) {
-                await setDoc(doc(productsRef, p.id), p);
-            }
-        }
-
-        function refreshCurrentView() {
-            if(!state.currentUser) return;
-            if(state.currentView === 'shop') renderShop();
-            if(state.currentView === 'orders') renderMyOrders();
-            if(state.currentView === 'admin') renderAdmin();
-            updateCartUI();
-        }
-
-        // --- AUTH LOGIC ---
-        window.toggleAuth = function() {
-            state.authMode = state.authMode === 'login' ? 'register' : 'login';
-            document.getElementById('auth-title').innerText = state.authMode === 'login' ? 'Connexion' : 'Création';
-            document.getElementById('btn-toggle-auth').innerText = state.authMode === 'login' ? 'Pas encore de compte ? Créer un profil' : 'Déjà un compte ? Se connecter';
-        }
-
-        window.handleLogin = function() {
-            const u = document.getElementById('login-user').value.trim();
-            const p = document.getElementById('login-pass').value.trim();
-            if(!u || !p) return notify('Champs vides', 'error');
-
-            if(state.authMode === 'login') {
-                const found = localUsers.find(x => x.user === u && x.pass === p);
-                if(found) {
-                    state.currentUser = found;
-                    localStorage.setItem('bm_session', JSON.stringify(found));
-                    notify(`Bienvenue ${u} !`);
+        function setupListeners() {
+            onSnapshot(productsRef, (snap) => {
+                STATE.products = snap.docs.map(d => ({id: d.id, ...d.data()}));
+                renderShop();
+                if(STATE.user?.role === 'admin') renderAdmin();
+                
+                if (!STATE.isLoaded) {
+                    STATE.isLoaded = true;
+                    hideLoader();
                     initAppUI();
-                } else {
-                    notify('Identifiants incorrects', 'error');
                 }
-            } else {
-                if(localUsers.find(x => x.user === u)) return notify('Pseudo déjà pris', 'error');
-                localUsers.push({ user: u, pass: p, role: 'user' });
-                localStorage.setItem('bm_users', JSON.stringify(localUsers));
-                notify('Compte créé ! Connectez-vous.');
-                window.toggleAuth();
-            }
-        }
-
-        window.logout = function() {
-            state.currentUser = null;
-            state.cart = [];
-            localStorage.removeItem('bm_session');
-            location.reload();
-        }
-
-        // --- NAVIGATION ---
-        window.showView = function(view) {
-            state.currentView = view;
-            ['view-auth', 'view-shop', 'view-orders', 'view-admin'].forEach(id => {
-                document.getElementById(id).classList.add('hidden');
             });
-            document.getElementById(`view-${view}`).classList.remove('hidden');
-            refreshCurrentView();
+
+            onSnapshot(ordersRef, (snap) => {
+                STATE.orders = snap.docs.map(d => ({id: d.id, ...d.data()})).sort((a,b) => b.timestamp - a.timestamp);
+                renderMyOrders();
+                if(STATE.user?.role === 'admin') renderAdmin();
+            });
         }
 
         function initAppUI() {
-            if(!state.currentUser) {
-                window.showView('auth');
-                return;
+            if(STATE.user) {
+                document.getElementById('nav').classList.remove('hidden');
+                document.getElementById('nav-admin').classList.toggle('hidden', STATE.user.role !== 'admin');
+                showView('shop');
+            } else { 
+                showView('auth'); 
             }
-            document.getElementById('nav').classList.remove('hidden');
-            document.getElementById('nav-admin').classList.toggle('hidden', state.currentUser.role !== 'admin');
-            window.showView('shop');
         }
 
-        // --- SHOP & CART ---
+        // --- AUTH LOGIC ---
+
+        window.toggleAuthTab = (mode) => {
+            STATE.authMode = mode;
+            const isLogin = mode === 'login';
+            document.getElementById('tab-login').className = isLogin ? 'flex-1 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest bg-primary-600 text-white transition-all' : 'flex-1 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest bg-slate-50 text-slate-400 transition-all';
+            document.getElementById('tab-register').className = !isLogin ? 'flex-1 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest bg-primary-600 text-white transition-all' : 'flex-1 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest bg-slate-50 text-slate-400 transition-all';
+            document.getElementById('auth-title').innerText = isLogin ? 'Ravi de vous revoir' : 'Créer un compte';
+            document.getElementById('auth-btn').innerText = isLogin ? 'Accéder au Market' : 'S\'inscrire maintenant';
+        };
+
+        window.handleAuth = async () => {
+            const u = document.getElementById('auth-user').value.trim();
+            const p = document.getElementById('auth-pass').value.trim();
+            if(!u || !p) return notify("Remplis tous les champs", "error");
+
+            if(STATE.authMode === 'register') {
+                // Inscription
+                const userDoc = await getDoc(doc(usersRef, u.toLowerCase()));
+                if(userDoc.exists()) return notify("Ce nom est déjà pris", "error");
+                
+                const newUser = {
+                    username: u,
+                    password: p, // Stockage simple pour démo
+                    role: (u === 'Liam' || u === 'Jules') ? 'admin' : 'user'
+                };
+                await setDoc(doc(usersRef, u.toLowerCase()), newUser);
+                notify("Compte créé ! Connecte-toi.");
+                toggleAuthTab('login');
+            } else {
+                // Connexion
+                const userDoc = await getDoc(doc(usersRef, u.toLowerCase()));
+                if(!userDoc.exists()) return notify("Utilisateur inconnu", "error");
+                
+                const data = userDoc.data();
+                if(data.password !== p) return notify("Mot de passe incorrect", "error");
+                
+                STATE.user = { user: data.username, role: data.role };
+                localStorage.setItem('bm_session', JSON.stringify(STATE.user));
+                initAppUI();
+                notify("Heureux de vous voir, " + data.username);
+            }
+        };
+
+        window.logout = () => { localStorage.clear(); location.reload(); };
+
+        // --- UI & SHOP LOGIC ---
+
+        window.showView = (v) => {
+            ['view-auth', 'view-shop', 'view-admin', 'view-orders'].forEach(id => {
+                const el = document.getElementById(id);
+                if(el) el.classList.add('hidden');
+            });
+            const target = document.getElementById(`view-${v}`);
+            if(target) target.classList.remove('hidden');
+        };
+
         function renderShop() {
             const list = document.getElementById('product-list');
-            list.innerHTML = DB.products.map(p => `
-                <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm admin-card">
-                    <div class="h-12 w-12 bg-primary-50 dark:bg-primary-900/20 text-primary-600 rounded-2xl flex items-center justify-center mb-4">
-                        <i class="fas fa-cookie-bite text-xl"></i>
-                    </div>
-                    <h3 class="font-black text-lg mb-1">${p.name}</h3>
-                    <div class="flex items-center justify-between mb-6">
-                        <span class="text-2xl font-black text-primary-600">${p.price.toFixed(2)}€</span>
-                        <span class="text-[10px] font-black px-3 py-1 bg-slate-100 dark:bg-slate-800 rounded-full uppercase tracking-tighter">Stock: ${p.stock}</span>
-                    </div>
-                    <button onclick="addToCart('${p.id}')" ${p.stock <= 0 ? 'disabled' : ''} class="w-full py-3 bg-slate-900 dark:bg-slate-800 text-white rounded-xl font-bold text-xs uppercase tracking-widest disabled:opacity-20 transition hover:bg-primary-600">
-                        Ajouter
-                    </button>
-                </div>
-            `).join('');
-        }
-
-        window.addToCart = function(id) {
-            const p = DB.products.find(x => x.id == id); // == permet de matcher string et int
-            if(!p) return;
-            const inCart = state.cart.find(x => x.id == id);
-            if(inCart) {
-                if(inCart.qty < p.stock) inCart.qty++;
-                else return notify('Stock max atteint', 'warning');
-            } else {
-                state.cart.push({...p, qty: 1});
-            }
-            updateCartUI();
-            notify(`${p.name} ajouté !`);
-        }
-
-        function updateCartUI() {
-            state.cart = state.cart.filter(item => {
-                const p = DB.products.find(x => x.id == item.id);
-                if (!p || p.stock <= 0) return false;
-                if (item.qty > p.stock) item.qty = p.stock;
-                return true;
-            });
-
-            const count = state.cart.reduce((a, b) => a + b.qty, 0);
-            document.getElementById('cart-count').innerText = count;
-            
-            const total = state.cart.reduce((a, b) => a + (b.price * b.qty), 0) + (count > 0 ? 0.5 : 0);
-            document.getElementById('cart-total').innerText = total.toFixed(2) + '€';
-
-            document.getElementById('cart-items').innerHTML = state.cart.map(i => `
-                <div class="flex items-center gap-4 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl">
-                    <div class="flex-1">
-                        <p class="font-black text-sm">${i.name}</p>
-                        <p class="text-xs text-slate-400 font-bold">${i.price.toFixed(2)}€</p>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <button onclick="changeQty('${i.id}', -1)" class="w-8 h-8 rounded-lg bg-white dark:bg-slate-800 shadow-sm flex items-center justify-center"><i class="fas fa-minus text-[10px]"></i></button>
-                        <span class="font-black text-sm">${i.qty}</span>
-                        <button onclick="changeQty('${i.id}', 1)" class="w-8 h-8 rounded-lg bg-white dark:bg-slate-800 shadow-sm flex items-center justify-center"><i class="fas fa-plus text-[10px]"></i></button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        window.changeQty = function(id, delta) {
-            const item = state.cart.find(x => x.id == id);
-            const p = DB.products.find(x => x.id == id);
-            if(!item || !p) return;
-
-            item.qty += delta;
-            if(item.qty > p.stock) item.qty = p.stock;
-            if(item.qty <= 0) state.cart = state.cart.filter(x => x.id != id);
-            updateCartUI();
-        }
-
-        window.showCart = function() { document.getElementById('cart-modal').classList.remove('hidden'); }
-        window.hideCart = function() { document.getElementById('cart-modal').classList.add('hidden'); }
-
-        window.checkout = async function() {
-            if(state.cart.length === 0) return;
-            const spot = document.getElementById('delivery-spot').value;
-            const total = state.cart.reduce((a, b) => a + (b.price * b.qty), 0) + 0.5;
-            const orderId = Date.now().toString();
-
-            const order = {
-                id: orderId,
-                user: state.currentUser.user,
-                items: [...state.cart],
-                total: total,
-                spot: spot,
-                status: 'En attente',
-                date: new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
-                timestamp: Date.now()
-            };
-
-            if (useCloud) {
-                try {
-                    await setDoc(doc(ordersRef, orderId), order);
-                    for(let item of state.cart) {
-                        const p = DB.products.find(x => x.id == item.id);
-                        if(p) await setDoc(doc(productsRef, p.id.toString()), { ...p, stock: Math.max(0, p.stock - item.qty) });
-                    }
-                } catch(e) { console.error(e); notify("Erreur Cloud", "error"); return; }
-            } else {
-                DB.orders.unshift(order);
-                state.cart.forEach(item => {
-                    const p = DB.products.find(x => x.id == item.id);
-                    if(p) p.stock -= item.qty;
-                });
-                saveLocalDB();
-            }
-
-            state.cart = [];
-            updateCartUI();
-            window.hideCart();
-            notify('Commande envoyée ! 🚀');
-            window.showView('orders');
-        }
-
-        // --- MY ORDERS ---
-        function renderMyOrders() {
-            const list = document.getElementById('my-orders');
-            const mine = DB.orders.filter(o => o.user === state.currentUser.user);
-            if(mine.length === 0) {
-                list.innerHTML = `<div class="p-10 text-center text-slate-400 font-bold border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-3xl">Aucune commande en cours</div>`;
+            const empty = document.getElementById('no-products');
+            if(!STATE.products.length) {
+                list.innerHTML = "";
+                empty.classList.remove('hidden');
                 return;
             }
-            list.innerHTML = mine.map(o => `
-                <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800">
-                    <div class="flex justify-between items-center mb-4">
-                        <span class="text-xs font-black text-primary-600 uppercase tracking-widest">${o.date}</span>
-                        <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase ${o.status === 'Livré' ? 'bg-green-100 text-green-600' : 'bg-primary-100 text-primary-600'}">${o.status}</span>
-                    </div>
-                    <div class="text-sm font-bold text-slate-500 mb-4">
-                        ${o.items.map(i => `${i.qty}x ${i.name}`).join(', ')}
-                    </div>
-                    <div class="flex justify-between items-end border-t border-slate-50 dark:border-slate-800 pt-4">
-                        <div class="text-[10px] font-black uppercase text-slate-400">📍 ${o.spot}</div>
-                        <div class="text-xl font-black">${o.total.toFixed(2)}€</div>
+            empty.classList.add('hidden');
+            list.innerHTML = STATE.products.map(p => `
+                <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm hover:shadow-md transition-all">
+                    <h3 class="font-black text-lg italic">${p.name}</h3>
+                    <p class="text-2xl font-black text-primary-600 my-4">${p.price.toFixed(2)}€</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-[10px] font-black uppercase ${p.stock <= 0 ? 'text-red-500' : 'text-slate-400'}">
+                            ${p.stock <= 0 ? 'Rupture' : 'Dispo: ' + p.stock}
+                        </span>
+                        <button onclick="addToCart('${p.id}')" ${p.stock <= 0 ? 'disabled' : ''} class="px-4 py-2 bg-slate-900 text-white text-[10px] font-black rounded-lg uppercase disabled:opacity-20 transition active:scale-95">Prendre</button>
                     </div>
                 </div>
             `).join('');
         }
 
-        // --- ADMIN ENGINE ---
+        window.addToCart = (id) => {
+            const p = STATE.products.find(x => x.id === id);
+            const inCart = STATE.cart.find(x => x.id === id);
+            if(inCart) { if(inCart.qty < p.stock) inCart.qty++; } else { STATE.cart.push({...p, qty: 1}); }
+            updateCartUI();
+            notify("Ajouté au panier");
+        };
+
+        function updateCartUI() {
+            const count = STATE.cart.reduce((a,b) => a+b.qty, 0);
+            document.getElementById('cart-count').innerText = count;
+            const total = STATE.cart.reduce((a,b) => a + (b.price*b.qty), 0) + (STATE.cart.length > 0 ? 0.5 : 0);
+            document.getElementById('cart-total').innerText = total.toFixed(2) + "€";
+            document.getElementById('cart-items').innerHTML = STATE.cart.map(i => `
+                <div class="flex justify-between items-center bg-slate-50 p-4 rounded-xl border border-slate-100">
+                    <div class="flex flex-col">
+                        <span class="font-black text-sm italic">${i.name}</span>
+                        <span class="text-[10px] font-bold text-slate-400">Quantité: ${i.qty}</span>
+                    </div>
+                    <button onclick="removeFromCart('${i.id}')" class="text-red-400 hover:text-red-600 p-2"><i class="fas fa-trash-alt"></i></button>
+                </div>
+            `).join('');
+        }
+
+        window.removeFromCart = (id) => { STATE.cart = STATE.cart.filter(x => x.id !== id); updateCartUI(); };
+        window.toggleCart = (s) => document.getElementById('cart-panel').style.transform = s ? 'translateX(0)' : 'translateX(100%)';
+
+        window.sendOrder = async () => {
+            if(!STATE.cart.length) return;
+            try {
+                const orderId = Date.now().toString();
+                const order = { 
+                    id: orderId, 
+                    user: STATE.user.user, 
+                    items: STATE.cart, 
+                    total: parseFloat(document.getElementById('cart-total').innerText), 
+                    spot: document.getElementById('cart-spot').value, 
+                    status: 'En attente', 
+                    timestamp: Date.now(), 
+                    date: new Date().toLocaleTimeString('fr-FR') 
+                };
+                await setDoc(doc(ordersRef, orderId), order);
+                
+                for(let item of STATE.cart) {
+                    const p = STATE.products.find(x => x.id === item.id);
+                    await setDoc(doc(productsRef, p.id), {...p, stock: p.stock - item.qty});
+                }
+
+                STATE.cart = []; updateCartUI(); toggleCart(false); showView('orders');
+                notify("COMMANDE ENVOYÉE !");
+            } catch(e) { notify("Erreur Cloud", "error"); }
+        };
+
+        window.adminAdd = async () => {
+            const n = document.getElementById('adm-n').value.trim();
+            const p = parseFloat(document.getElementById('adm-p').value);
+            const s = parseInt(document.getElementById('adm-s').value);
+            if(!n || isNaN(p)) return;
+            const id = Date.now().toString();
+            await setDoc(doc(productsRef, id), {id, name:n, price:p, stock:s || 0, timestamp: Date.now()});
+            document.getElementById('adm-n').value = ''; 
+            document.getElementById('adm-p').value = ''; 
+            document.getElementById('adm-s').value = '';
+            notify("Stock mis à jour");
+        };
+
+        window.adminDel = async (id) => { if(confirm("Supprimer ?")) await deleteDoc(doc(productsRef, id)); };
+        window.orderDone = async (id) => {
+            const o = STATE.orders.find(x => x.id === id);
+            await setDoc(doc(ordersRef, id), {...o, status: 'Livré'});
+            notify("Commande livrée");
+        };
+        window.orderDel = async (id) => await deleteDoc(doc(ordersRef, id));
+
         function renderAdmin() {
-            const inv = document.getElementById('admin-inventory');
-            inv.innerHTML = DB.products.map(p => `
-                <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm flex items-center justify-between">
-                    <div class="flex-1">
-                        <input type="text" onchange="adminUpdateProduct('${p.id}', 'name', this.value)" value="${p.name}" class="bg-transparent font-black outline-none focus:text-primary-500 block w-full">
-                        <div class="flex items-center gap-4 mt-2">
-                            <div class="flex flex-col">
-                                <span class="text-[8px] font-black uppercase text-slate-400">Prix (€)</span>
-                                <input type="number" step="0.01" onchange="adminUpdateProduct('${p.id}', 'price', this.value)" value="${p.price}" class="bg-transparent text-sm font-bold w-16 outline-none">
-                            </div>
-                            <div class="flex flex-col">
-                                <span class="text-[8px] font-black uppercase text-slate-400">Stock</span>
-                                <div class="flex items-center gap-2">
-                                    <button onclick="adminAdjustStock('${p.id}', -1)" class="text-xs opacity-50"><i class="fas fa-minus"></i></button>
-                                    <span class="text-sm font-bold">${p.stock}</span>
-                                    <button onclick="adminAdjustStock('${p.id}', 1)" class="text-xs opacity-50"><i class="fas fa-plus"></i></button>
-                                </div>
-                            </div>
-                        </div>
+            const inv = document.getElementById('adm-inventory');
+            const ord = document.getElementById('adm-orders');
+            if(inv) inv.innerHTML = STATE.products.map(p => `
+                <div class="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-100 font-bold text-sm">
+                    <div class="flex flex-col">
+                        <span class="italic underline">${p.name}</span>
+                        <span class="text-[10px] text-slate-400">Stk: ${p.stock} | ${p.price.toFixed(2)}€</span>
                     </div>
-                    <button onclick="adminDeleteProduct('${p.id}')" class="text-slate-300 hover:text-red-500 p-2 transition"><i class="fas fa-trash-alt"></i></button>
+                    <button onclick="adminDel('${p.id}')" class="text-red-400 hover:text-red-600"><i class="fas fa-trash"></i></button>
                 </div>
             `).join('');
-
-            const flow = document.getElementById('admin-orders-flow');
-            flow.innerHTML = DB.orders.map(o => `
-                <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm">
-                    <div class="flex justify-between items-start mb-3">
-                        <div>
-                            <p class="text-xs font-black uppercase tracking-tighter">${o.user}</p>
-                            <p class="text-[10px] text-slate-400 font-bold">${o.date} - ${o.spot}</p>
-                        </div>
-                        <span class="text-sm font-black">${o.total.toFixed(2)}€</span>
+            
+            if(ord) ord.innerHTML = STATE.orders.map(o => `
+                <div class="bg-white p-5 rounded-2xl border-2 ${o.status === 'Livré' ? 'border-green-100 opacity-60' : 'border-primary-100 shadow-lg'}">
+                    <div class="flex justify-between mb-3">
+                        <span class="font-black text-xs px-2 py-1 bg-slate-100 rounded text-slate-600 italic underline">${o.user.toUpperCase()}</span>
+                        <span class="font-black text-primary-600">${o.total.toFixed(2)}€</span>
                     </div>
-                    <div class="text-[11px] font-bold text-slate-500 mb-4">${o.items.map(i => `${i.qty}x ${i.name}`).join(', ')}</div>
+                    <div class="text-[11px] font-bold text-slate-700 mb-1">Spot: ${o.spot}</div>
+                    <div class="text-[10px] text-slate-400 mb-4 italic">${o.items.map(i => i.qty+'x '+i.name).join(', ')}</div>
                     <div class="flex gap-2">
-                        ${o.status === 'En attente' ? `<button onclick="adminMarkOrder('${o.id}', 'Livré')" class="flex-1 py-2 bg-green-500 text-white text-[10px] font-black rounded-lg uppercase tracking-widest">Livrer</button>` : `<span class="flex-1 text-center py-2 text-green-500 text-[10px] font-black uppercase">Terminé</span>`}
-                        <button onclick="adminDeleteOrder('${o.id}')" class="px-3 py-2 bg-slate-100 dark:bg-slate-800 rounded-lg text-slate-400 hover:text-red-500"><i class="fas fa-trash"></i></button>
+                        ${o.status === 'En attente' ? `<button onclick="orderDone('${o.id}')" class="flex-1 py-2 bg-green-500 text-white text-[10px] font-black rounded-lg uppercase shadow-md">Livré</button>` : `<span class="flex-1 py-2 text-center text-green-500 text-[10px] font-black uppercase">Terminé</span>`}
+                        <button onclick="orderDel('${o.id}')" class="px-3 bg-slate-100 rounded-lg text-slate-400 hover:text-red-400"><i class="fas fa-trash"></i></button>
                     </div>
                 </div>
             `).join('');
         }
 
-        window.adminAddProduct = async function() {
-            const n = document.getElementById('new-p-name').value;
-            const p = parseFloat(document.getElementById('new-p-price').value);
-            const s = parseInt(document.getElementById('new-p-stock').value);
-            if(!n || isNaN(p) || isNaN(s)) return notify('Informations incomplètes', 'error');
-
-            const newId = Date.now().toString();
-            const product = { id: newId, name: n, price: p, stock: s, timestamp: Date.now() };
-
-            if (useCloud) {
-                await setDoc(doc(productsRef, newId), product);
-            } else {
-                DB.products.unshift(product);
-                saveLocalDB();
-                renderAdmin();
-            }
-            
-            notify('Produit ajouté !');
-            document.getElementById('new-p-name').value = '';
-            document.getElementById('new-p-price').value = '';
-            document.getElementById('new-p-stock').value = '';
+        function renderMyOrders() {
+            const mine = STATE.orders.filter(o => o.user === STATE.user?.user);
+            const container = document.getElementById('my-orders');
+            if(container) container.innerHTML = mine.length ? mine.map(o => `
+                <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
+                    <div class="flex justify-between mb-2">
+                        <span class="text-[10px] font-black uppercase text-slate-400">${o.date}</span>
+                        <span class="text-[10px] font-black uppercase ${o.status === 'Livré' ? 'text-green-500' : 'text-primary-600 animate-pulse'}">
+                            <i class="fas ${o.status === 'Livré' ? 'fa-check-circle' : 'fa-clock'} mr-1"></i> ${o.status}
+                        </span>
+                    </div>
+                    <p class="font-bold text-sm mb-2 text-slate-700 italic">${o.items.map(i => i.qty+'x '+i.name).join(', ')}</p>
+                    <p class="text-xl font-black text-primary-600">${o.total.toFixed(2)}€</p>
+                </div>
+            `).join('') : '<p class="text-center text-slate-300 font-bold py-10 italic">Rien ici pour le moment</p>';
         }
 
-        window.adminUpdateProduct = async function(id, field, val) {
-            const p = DB.products.find(x => x.id == id);
-            if (!p) return;
-            
-            const updated = { ...p };
-            updated[field] = field === 'price' ? parseFloat(val) : val;
-            
-            if (useCloud) {
-                await setDoc(doc(productsRef, id.toString()), updated);
-            } else {
-                p[field] = updated[field];
-                saveLocalDB();
-            }
-            notify('Modification enregistrée');
-        }
-
-        window.adminAdjustStock = async function(id, delta) {
-            const p = DB.products.find(x => x.id == id);
-            if (!p) return;
-
-            let newStock = p.stock + delta;
-            if(newStock < 0) newStock = 0;
-            
-            if (useCloud) {
-                await setDoc(doc(productsRef, id.toString()), { ...p, stock: newStock });
-            } else {
-                p.stock = newStock;
-                saveLocalDB();
-                renderAdmin();
-            }
-        }
-
-        window.adminDeleteProduct = async function(id) {
-            if (useCloud) {
-                await deleteDoc(doc(productsRef, id.toString()));
-            } else {
-                DB.products = DB.products.filter(x => x.id != id);
-                saveLocalDB();
-                renderAdmin();
-            }
-            notify('Produit supprimé', 'warning');
-        }
-
-        window.adminMarkOrder = async function(id, status) {
-            const o = DB.orders.find(x => x.id == id);
-            if (!o) return;
-
-            if (useCloud) {
-                await setDoc(doc(ordersRef, id.toString()), { ...o, status: status });
-            } else {
-                o.status = status;
-                saveLocalDB();
-                renderAdmin();
-            }
-            notify('Commande marquée comme livrée !');
-        }
-
-        window.adminDeleteOrder = async function(id) {
-            if (useCloud) {
-                await deleteDoc(doc(ordersRef, id.toString()));
-            } else {
-                DB.orders = DB.orders.filter(x => x.id != id);
-                saveLocalDB();
-                renderAdmin();
-            }
-            notify('Historique supprimé');
-        }
-
-        // --- UTILS ---
-        window.notify = function(msg, type = 'success') {
+        window.notify = (m, type="success") => {
             const n = document.createElement('div');
-            n.className = `p-4 rounded-2xl shadow-2xl glass border-l-4 ${type === 'success' ? 'border-green-500 text-green-600' : (type === 'warning' ? 'border-orange-500 text-orange-600' : 'border-red-500 text-red-500')} flex items-center gap-3 animate-slide transform transition-all duration-300 pointer-events-auto`;
-            n.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> <span class="text-xs font-black uppercase tracking-widest">${msg}</span>`;
+            n.className = `p-4 rounded-xl ${type==='error'?'bg-red-500':'bg-slate-900'} text-white font-black text-[9px] uppercase tracking-widest shadow-2xl transform transition-all duration-300 translate-y-0 opacity-100`;
+            n.innerText = m;
             document.getElementById('notifier').appendChild(n);
-            setTimeout(() => { n.classList.add('opacity-0', 'translate-x-10'); setTimeout(() => n.remove(), 300); }, 2500);
+            setTimeout(() => { n.style.opacity = '0'; setTimeout(() => n.remove(), 300); }, 3000);
+        };
+
+        function hideLoader() {
+            const loader = document.getElementById('loader');
+            loader.style.opacity = '0';
+            setTimeout(() => {
+                loader.style.display = 'none';
+                document.getElementById('main-content').classList.remove('hidden');
+            }, 500);
         }
 
-        // Boot
-        initSystem();
-
+        boot();
     </script>
-    <style>
-        @keyframes slide { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
-    </style>
 </body>
 </html>
