@@ -35,7 +35,7 @@
     <!-- Loading Overlay -->
     <div id="loader" class="fixed inset-0 z-[200] bg-slate-50 dark:bg-slate-950 flex flex-col items-center justify-center">
         <div class="w-16 h-16 border-4 border-primary-200 border-t-primary-600 rounded-full animate-spin mb-4"></div>
-        <p class="font-bold text-slate-500 animate-pulse">Connexion au Cloud...</p>
+        <p class="font-bold text-slate-500 animate-pulse">Initialisation...</p>
     </div>
 
     <!-- Navigation -->
@@ -163,25 +163,18 @@
     <div id="notifier" class="fixed bottom-6 right-6 z-[100] space-y-2 pointer-events-none"></div>
 
     <script type="module">
-        // --- FIREBASE CLOUD SETUP ---
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Configuration fournie par l'environnement
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        // --- HYBRID STORAGE DETECTION ---
+        // Si le site est déployé en externe, __firebase_config n'existe pas
+        const hasCloudAccess = typeof __firebase_config !== 'undefined' && __firebase_config;
+        let useCloud = false;
+        
+        let app, auth, db, productsRef, ordersRef, fbUser;
 
-        // Chemins de données stricts
-        const productsRef = collection(db, 'artifacts', appId, 'public', 'data', 'products');
-        const ordersRef = collection(db, 'artifacts', appId, 'public', 'data', 'orders');
-
-        let fbUser = null;
-
-        // --- LOCAL STATE ---
+        // --- LOCAL DATA STATE ---
         const localUsers = JSON.parse(localStorage.getItem('bm_users')) || [
             { user: 'Liam', pass: 'Liam', role: 'admin' },
             { user: 'Jules', pass: 'Jules', role: 'admin' }
@@ -199,66 +192,95 @@
             orders: []
         };
 
-        // --- FIREBASE INIT & SYNC ---
-        const initCloud = async () => {
-            try {
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(auth);
+        const saveLocalDB = () => {
+            localStorage.setItem('bm_products', JSON.stringify(DB.products));
+            localStorage.setItem('bm_orders', JSON.stringify(DB.orders));
+        };
+
+        function hideLoader() {
+            document.getElementById('loader').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('loader').style.display = 'none';
+                document.getElementById('app-container').classList.remove('hidden');
+            }, 300);
+        }
+
+        // --- INITIALIZATION ---
+        const initSystem = async () => {
+            if (hasCloudAccess) {
+                try {
+                    const firebaseConfig = JSON.parse(__firebase_config);
+                    app = initializeApp(firebaseConfig);
+                    auth = getAuth(app);
+                    db = getFirestore(app);
+                    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+                    productsRef = collection(db, 'artifacts', appId, 'public', 'data', 'products');
+                    ordersRef = collection(db, 'artifacts', appId, 'public', 'data', 'orders');
+                    
+                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                        await signInWithCustomToken(auth, __initial_auth_token);
+                    } else {
+                        await signInAnonymously(auth);
+                    }
+                    useCloud = true;
+
+                    onAuthStateChanged(auth, (user) => {
+                        fbUser = user;
+                        if (user) setupCloudListeners();
+                    });
+                } catch (e) {
+                    console.error("Firebase Init Error:", e);
+                    fallbackToLocal();
                 }
-            } catch (e) {
-                console.error("Auth Error", e);
-                notify("Erreur de connexion Cloud", "error");
+            } else {
+                fallbackToLocal();
             }
         };
 
-        onAuthStateChanged(auth, (user) => {
-            fbUser = user;
-            if (user) {
-                setupCloudListeners();
+        function fallbackToLocal() {
+            useCloud = false;
+            // Charger les données du localStorage ou mettre les valeurs par défaut
+            const defaultProducts = [
+                { id: "1", name: 'Kinder Bueno', price: 1.20, stock: 10, timestamp: Date.now() },
+                { id: "2", name: 'Capri-Sun', price: 0.80, stock: 15, timestamp: Date.now() - 1000 },
+                { id: "3", name: 'Oreo Original', price: 1.00, stock: 8, timestamp: Date.now() - 2000 }
+            ];
+            
+            DB.products = JSON.parse(localStorage.getItem('bm_products')) || defaultProducts;
+            DB.orders = JSON.parse(localStorage.getItem('bm_orders')) || [];
+            
+            hideLoader();
+            initAppUI();
+            
+            if(!hasCloudAccess) {
+                setTimeout(() => notify("Mode Local Activé (Hors Cloud)", "warning"), 1000);
             }
-        });
+        }
 
+        // --- CLOUD LISTENERS ---
         function setupCloudListeners() {
-            if(!fbUser) return;
-
-            // Synchronisation des Produits
             onSnapshot(productsRef, (snapshot) => {
                 const loadedProducts = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-                
-                // Si la BDD est vide (premier lancement), on la remplit
-                if (loadedProducts.length === 0) {
-                    seedInitialProducts();
-                } else {
+                if (loadedProducts.length === 0) seedInitialProducts();
+                else {
                     DB.products = loadedProducts.sort((a,b) => b.timestamp - a.timestamp);
                     refreshCurrentView();
                 }
-                
-                // Retirer le loader
-                document.getElementById('loader').style.opacity = '0';
-                setTimeout(() => {
-                    document.getElementById('loader').style.display = 'none';
-                    document.getElementById('app-container').classList.remove('hidden');
-                    initApp();
-                }, 300);
-
+                hideLoader();
+                initAppUI();
             }, (error) => {
                 console.error("Erreur sync produits", error);
+                fallbackToLocal();
             });
 
-            // Synchronisation des Commandes
             onSnapshot(ordersRef, (snapshot) => {
                 DB.orders = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
                 DB.orders.sort((a, b) => b.timestamp - a.timestamp);
                 refreshCurrentView();
-            }, (error) => {
-                console.error("Erreur sync commandes", error);
-            });
+            }, (error) => console.error("Erreur sync commandes", error));
         }
 
         async function seedInitialProducts() {
-            if(!fbUser) return;
             const defaults = [
                 { id: "1", name: 'Kinder Bueno', price: 1.20, stock: 10, timestamp: Date.now() },
                 { id: "2", name: 'Capri-Sun', price: 0.80, stock: 15, timestamp: Date.now() - 1000 },
@@ -274,10 +296,10 @@
             if(state.currentView === 'shop') renderShop();
             if(state.currentView === 'orders') renderMyOrders();
             if(state.currentView === 'admin') renderAdmin();
-            updateCartUI(); // Met à jour le panier si les stocks changent
+            updateCartUI();
         }
 
-        // --- AUTH LOGIC (Users list remains local for simplicity) ---
+        // --- AUTH LOGIC ---
         window.toggleAuth = function() {
             state.authMode = state.authMode === 'login' ? 'register' : 'login';
             document.getElementById('auth-title').innerText = state.authMode === 'login' ? 'Connexion' : 'Création';
@@ -295,7 +317,7 @@
                     state.currentUser = found;
                     localStorage.setItem('bm_session', JSON.stringify(found));
                     notify(`Bienvenue ${u} !`);
-                    initApp();
+                    initAppUI();
                 } else {
                     notify('Identifiants incorrects', 'error');
                 }
@@ -325,7 +347,7 @@
             refreshCurrentView();
         }
 
-        function initApp() {
+        function initAppUI() {
             if(!state.currentUser) {
                 window.showView('auth');
                 return;
@@ -356,9 +378,9 @@
         }
 
         window.addToCart = function(id) {
-            const p = DB.products.find(x => x.id === id);
+            const p = DB.products.find(x => x.id == id); // == permet de matcher string et int
             if(!p) return;
-            const inCart = state.cart.find(x => x.id === id);
+            const inCart = state.cart.find(x => x.id == id);
             if(inCart) {
                 if(inCart.qty < p.stock) inCart.qty++;
                 else return notify('Stock max atteint', 'warning');
@@ -370,11 +392,10 @@
         }
 
         function updateCartUI() {
-            // Nettoyage du panier si le stock cloud a baissé entre temps
             state.cart = state.cart.filter(item => {
-                const cloudProduct = DB.products.find(p => p.id === item.id);
-                if (!cloudProduct || cloudProduct.stock <= 0) return false;
-                if (item.qty > cloudProduct.stock) item.qty = cloudProduct.stock;
+                const p = DB.products.find(x => x.id == item.id);
+                if (!p || p.stock <= 0) return false;
+                if (item.qty > p.stock) item.qty = p.stock;
                 return true;
             });
 
@@ -400,13 +421,13 @@
         }
 
         window.changeQty = function(id, delta) {
-            const item = state.cart.find(x => x.id === id);
-            const p = DB.products.find(x => x.id === id);
+            const item = state.cart.find(x => x.id == id);
+            const p = DB.products.find(x => x.id == id);
             if(!item || !p) return;
 
             item.qty += delta;
             if(item.qty > p.stock) item.qty = p.stock;
-            if(item.qty <= 0) state.cart = state.cart.filter(x => x.id !== id);
+            if(item.qty <= 0) state.cart = state.cart.filter(x => x.id != id);
             updateCartUI();
         }
 
@@ -414,7 +435,7 @@
         window.hideCart = function() { document.getElementById('cart-modal').classList.add('hidden'); }
 
         window.checkout = async function() {
-            if(state.cart.length === 0 || !fbUser) return;
+            if(state.cart.length === 0) return;
             const spot = document.getElementById('delivery-spot').value;
             const total = state.cart.reduce((a, b) => a + (b.price * b.qty), 0) + 0.5;
             const orderId = Date.now().toString();
@@ -430,28 +451,28 @@
                 timestamp: Date.now()
             };
 
-            try {
-                // Sauvegarde de la commande sur le cloud
-                await setDoc(doc(ordersRef, orderId), order);
-
-                // Diminuer stocks sur le cloud
-                for(let item of state.cart) {
-                    const p = DB.products.find(x => x.id === item.id);
-                    if(p) {
-                        const newStock = Math.max(0, p.stock - item.qty);
-                        await setDoc(doc(productsRef, p.id), { ...p, stock: newStock });
+            if (useCloud) {
+                try {
+                    await setDoc(doc(ordersRef, orderId), order);
+                    for(let item of state.cart) {
+                        const p = DB.products.find(x => x.id == item.id);
+                        if(p) await setDoc(doc(productsRef, p.id.toString()), { ...p, stock: Math.max(0, p.stock - item.qty) });
                     }
-                }
-
-                state.cart = [];
-                updateCartUI();
-                window.hideCart();
-                notify('Commande envoyée ! 🚀');
-                window.showView('orders');
-            } catch (error) {
-                console.error("Erreur commande", error);
-                notify("Erreur lors de la commande", "error");
+                } catch(e) { console.error(e); notify("Erreur Cloud", "error"); return; }
+            } else {
+                DB.orders.unshift(order);
+                state.cart.forEach(item => {
+                    const p = DB.products.find(x => x.id == item.id);
+                    if(p) p.stock -= item.qty;
+                });
+                saveLocalDB();
             }
+
+            state.cart = [];
+            updateCartUI();
+            window.hideCart();
+            notify('Commande envoyée ! 🚀');
+            window.showView('orders');
         }
 
         // --- MY ORDERS ---
@@ -479,9 +500,8 @@
             `).join('');
         }
 
-        // --- ADMIN ENGINE (CLOUD POWERED) ---
+        // --- ADMIN ENGINE ---
         function renderAdmin() {
-            // Inventaire
             const inv = document.getElementById('admin-inventory');
             inv.innerHTML = DB.products.map(p => `
                 <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm flex items-center justify-between">
@@ -506,7 +526,6 @@
                 </div>
             `).join('');
 
-            // Commandes
             const flow = document.getElementById('admin-orders-flow');
             flow.innerHTML = DB.orders.map(o => `
                 <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm">
@@ -527,64 +546,93 @@
         }
 
         window.adminAddProduct = async function() {
-            if(!fbUser) return;
             const n = document.getElementById('new-p-name').value;
             const p = parseFloat(document.getElementById('new-p-price').value);
             const s = parseInt(document.getElementById('new-p-stock').value);
             if(!n || isNaN(p) || isNaN(s)) return notify('Informations incomplètes', 'error');
 
             const newId = Date.now().toString();
-            await setDoc(doc(productsRef, newId), { 
-                id: newId, name: n, price: p, stock: s, timestamp: Date.now() 
-            });
+            const product = { id: newId, name: n, price: p, stock: s, timestamp: Date.now() };
+
+            if (useCloud) {
+                await setDoc(doc(productsRef, newId), product);
+            } else {
+                DB.products.unshift(product);
+                saveLocalDB();
+                renderAdmin();
+            }
             
-            notify('Produit ajouté au Cloud !');
+            notify('Produit ajouté !');
             document.getElementById('new-p-name').value = '';
             document.getElementById('new-p-price').value = '';
             document.getElementById('new-p-stock').value = '';
         }
 
         window.adminUpdateProduct = async function(id, field, val) {
-            if(!fbUser) return;
-            const p = DB.products.find(x => x.id === id);
+            const p = DB.products.find(x => x.id == id);
             if (!p) return;
             
             const updated = { ...p };
             updated[field] = field === 'price' ? parseFloat(val) : val;
             
-            await setDoc(doc(productsRef, id), updated);
-            notify('Modification cloud enregistrée');
+            if (useCloud) {
+                await setDoc(doc(productsRef, id.toString()), updated);
+            } else {
+                p[field] = updated[field];
+                saveLocalDB();
+            }
+            notify('Modification enregistrée');
         }
 
         window.adminAdjustStock = async function(id, delta) {
-            if(!fbUser) return;
-            const p = DB.products.find(x => x.id === id);
+            const p = DB.products.find(x => x.id == id);
             if (!p) return;
 
             let newStock = p.stock + delta;
             if(newStock < 0) newStock = 0;
             
-            await setDoc(doc(productsRef, id), { ...p, stock: newStock });
+            if (useCloud) {
+                await setDoc(doc(productsRef, id.toString()), { ...p, stock: newStock });
+            } else {
+                p.stock = newStock;
+                saveLocalDB();
+                renderAdmin();
+            }
         }
 
         window.adminDeleteProduct = async function(id) {
-            if(!fbUser) return;
-            await deleteDoc(doc(productsRef, id));
-            notify('Produit supprimé du cloud', 'warning');
+            if (useCloud) {
+                await deleteDoc(doc(productsRef, id.toString()));
+            } else {
+                DB.products = DB.products.filter(x => x.id != id);
+                saveLocalDB();
+                renderAdmin();
+            }
+            notify('Produit supprimé', 'warning');
         }
 
         window.adminMarkOrder = async function(id, status) {
-            if(!fbUser) return;
-            const o = DB.orders.find(x => x.id === id);
+            const o = DB.orders.find(x => x.id == id);
             if (!o) return;
 
-            await setDoc(doc(ordersRef, id), { ...o, status: status });
+            if (useCloud) {
+                await setDoc(doc(ordersRef, id.toString()), { ...o, status: status });
+            } else {
+                o.status = status;
+                saveLocalDB();
+                renderAdmin();
+            }
             notify('Commande marquée comme livrée !');
         }
 
         window.adminDeleteOrder = async function(id) {
-            if(!fbUser) return;
-            await deleteDoc(doc(ordersRef, id));
+            if (useCloud) {
+                await deleteDoc(doc(ordersRef, id.toString()));
+            } else {
+                DB.orders = DB.orders.filter(x => x.id != id);
+                saveLocalDB();
+                renderAdmin();
+            }
             notify('Historique supprimé');
         }
 
@@ -597,8 +645,8 @@
             setTimeout(() => { n.classList.add('opacity-0', 'translate-x-10'); setTimeout(() => n.remove(), 300); }, 2500);
         }
 
-        // Lancement de l'authentification silencieuse Cloud
-        initCloud();
+        // Boot
+        initSystem();
 
     </script>
     <style>
