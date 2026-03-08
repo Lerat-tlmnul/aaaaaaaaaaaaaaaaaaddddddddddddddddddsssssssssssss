@@ -29,7 +29,6 @@
             scroll-behavior: smooth;
         }
 
-        /* Verre dépoli amélioré */
         .glass { 
             background: rgba(255, 255, 255, 0.75); 
             backdrop-filter: blur(20px); 
@@ -37,7 +36,6 @@
             border-bottom: 1px solid rgba(255,255,255,0.3); 
         }
 
-        /* Animations de cartes */
         .product-card {
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
@@ -49,7 +47,6 @@
             transform: scale(0.98);
         }
 
-        /* Effet de zoom image */
         .img-zoom { 
             transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); 
         }
@@ -57,13 +54,6 @@
             transform: scale(1.1); 
         }
 
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #cbd5e1; }
-
-        /* Boutons avec effets de pression */
         .btn-press {
             transition: all 0.2s ease;
         }
@@ -73,7 +63,6 @@
 
         #loader { transition: opacity 0.6s ease-in-out; }
         
-        /* Animation d'entrée pour les listes */
         @keyframes fadeInScale {
             from { opacity: 0; transform: scale(0.95); }
             to { opacity: 1; transform: scale(1); }
@@ -81,6 +70,10 @@
         .animate-list > * {
             animation: fadeInScale 0.4s ease-out forwards;
         }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
     </style>
 </head>
 <body class="bg-[#f8fafc] text-slate-900 min-h-screen">
@@ -125,7 +118,7 @@
         </div>
     </nav>
 
-    <!-- MOBILE NAV HELPER (Apparaît si on descend) -->
+    <!-- MOBILE NAV HELPER -->
     <div class="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex gap-4 bg-slate-900/90 backdrop-blur-xl p-2 rounded-3xl shadow-2xl border border-white/10">
         <button onclick="showView('shop')" class="w-12 h-12 flex items-center justify-center text-white/50 hover:text-white"><i class="fas fa-store"></i></button>
         <button onclick="showView('orders')" class="w-12 h-12 flex items-center justify-center text-white/50 hover:text-white"><i class="fas fa-list-ul"></i></button>
@@ -169,8 +162,8 @@
                 <div>
                     <h1 class="text-5xl font-black tracking-tight italic">Le Stock <span class="text-primary-600">Pro.</span></h1>
                     <div class="flex items-center gap-2 mt-2">
-                        <span class="px-3 py-1 bg-primary-50 text-primary-600 rounded-full text-[9px] font-black uppercase tracking-widest">Livraison Ultra-rapide</span>
-                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">• 0.50€ fixes</span>
+                        <span class="px-3 py-1 bg-primary-50 text-primary-600 rounded-full text-[9px] font-black uppercase tracking-widest">Premium Cloud</span>
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">• 0.50€ de frais par article</span>
                     </div>
                 </div>
                 <button onclick="toggleCart(true)" class="hidden md:flex relative group p-1 bg-white rounded-3xl shadow-2xl border border-slate-100 items-center gap-4 pr-6 hover:scale-105 transition-all active:scale-95">
@@ -257,7 +250,7 @@
         </section>
     </main>
 
-    <!-- PANIER (Drawer amélioré) -->
+    <!-- PANIER -->
     <div id="cart-panel" class="fixed inset-y-0 right-0 w-full max-w-md bg-white shadow-[0_0_100px_rgba(0,0,0,0.1)] z-[100] transform translate-x-full transition-transform duration-500 flex flex-col rounded-l-5xl border-l border-slate-100">
         <div class="p-10 flex justify-between items-center border-b border-slate-50">
             <div class="flex items-center gap-4">
@@ -276,16 +269,16 @@
         <div class="p-10 pt-0 bg-white">
             <div class="bg-slate-50 rounded-4xl p-8 space-y-4">
                 <div class="flex justify-between items-center text-slate-400">
-                    <span class="font-black text-[10px] uppercase tracking-widest">Sous-total</span>
+                    <span class="font-black text-[10px] uppercase tracking-widest">Articles (total prix)</span>
                     <span id="cart-subtotal" class="font-black">0.00€</span>
                 </div>
                 <div class="flex justify-between items-center text-slate-400">
-                    <span class="font-black text-[10px] uppercase tracking-widest">Service livraison</span>
-                    <span class="font-black text-primary-600">+ 0.50€</span>
+                    <span class="font-black text-[10px] uppercase tracking-widest">Frais service (0.50€/art.)</span>
+                    <span id="cart-fees" class="font-black text-primary-600">0.00€</span>
                 </div>
                 <div class="pt-4 border-t border-slate-200 flex justify-between items-end">
-                    <span class="font-black text-lg">TOTAL</span>
-                    <span id="cart-total" class="text-4xl font-black text-slate-900 italic underline">0.50€</span>
+                    <span class="font-black text-lg">TOTAL CLOUD</span>
+                    <span id="cart-total" class="text-4xl font-black text-slate-900 italic underline">0.00€</span>
                 </div>
                 <button onclick="sendOrder()" class="w-full mt-6 py-6 bg-slate-900 text-white font-black rounded-3xl shadow-2xl shadow-slate-900/30 hover:bg-primary-600 transition-all active:scale-95 btn-press uppercase tracking-[0.2em] text-xs">
                     Payer & Valider <i class="fas fa-arrow-right ml-2 text-[10px]"></i>
@@ -302,7 +295,6 @@
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, doc, setDoc, getDoc, deleteDoc, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // CONFIG (Inchangée)
         const config = {
             apiKey: "AIzaSyAoaOJ2K2_mR59CejL69IolD9775BQrJ_0",
             authDomain: "brothers-market-601dd.firebaseapp.com",
@@ -330,6 +322,8 @@
             cart: [],
             isLoaded: false
         };
+
+        const FEE_PER_ITEM = 0.50;
 
         async function boot() {
             try {
@@ -366,12 +360,8 @@
         window.toggleAuthTab = (mode) => {
             STATE.authMode = mode;
             const isL = mode === 'login';
-            const tL = document.getElementById('tab-login');
-            const tR = document.getElementById('tab-register');
-            
-            tL.className = isL ? 'flex-1 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest bg-primary-600 text-white shadow-lg shadow-primary-500/20 transition-all' : 'flex-1 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest text-slate-400 transition-all';
-            tR.className = !isL ? 'flex-1 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest bg-primary-600 text-white shadow-lg shadow-primary-500/20 transition-all' : 'flex-1 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest text-slate-400 transition-all';
-            
+            document.getElementById('tab-login').className = isL ? 'flex-1 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest bg-primary-600 text-white shadow-lg shadow-primary-500/20 transition-all' : 'flex-1 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest text-slate-400 transition-all';
+            document.getElementById('tab-register').className = !isL ? 'flex-1 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest bg-primary-600 text-white shadow-lg shadow-primary-500/20 transition-all' : 'flex-1 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest text-slate-400 transition-all';
             document.getElementById('auth-title').innerText = isL ? 'Content de vous revoir' : 'Rejoindre le Market';
             document.getElementById('auth-btn').innerText = isL ? 'Démarrer la session' : 'Créer mon accès Cloud';
         };
@@ -406,10 +396,8 @@
                 if(el) el.classList.add('hidden');
             });
             const target = document.getElementById(`view-${v}`);
-            if(target) {
-                target.classList.remove('hidden');
-                window.scrollTo(0, 0);
-            }
+            if(target) target.classList.remove('hidden');
+            window.scrollTo(0, 0);
         };
 
         function renderShop() {
@@ -435,13 +423,11 @@
                         </button>
                     </div>
                     <div class="px-2">
-                        <div class="flex justify-between items-start mb-2">
-                            <h3 class="font-black text-xl tracking-tight truncate italic underline decoration-primary-200 underline-offset-4">${p.name}</h3>
-                        </div>
+                        <h3 class="font-black text-xl tracking-tight truncate italic underline decoration-primary-200 underline-offset-4">${p.name}</h3>
                         <div class="flex items-center justify-between mt-4">
                             <div class="flex flex-col">
-                                <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Prix Cloud</span>
-                                <span class="text-2xl font-black text-primary-600">${p.price.toFixed(2)}<span class="text-sm">€</span></span>
+                                <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Prix HT</span>
+                                <span class="text-2xl font-black text-primary-600">${p.price.toFixed(2)}€</span>
                             </div>
                             <div class="text-right">
                                 <span class="text-[9px] font-black text-slate-300 uppercase tracking-widest">Stock</span>
@@ -457,13 +443,8 @@
             const p = STATE.products.find(x => x.id === id);
             const inCart = STATE.cart.find(x => x.id === id);
             if(inCart) { 
-                if(inCart.qty < p.stock) {
-                    inCart.qty++; 
-                    notify(`+1 ${p.name}`);
-                } else {
-                    notify("Stock maximum atteint", "error");
-                    return;
-                }
+                if(inCart.qty < p.stock) { inCart.qty++; notify(`+1 ${p.name}`); } 
+                else { notify("Stock maximum atteint", "error"); return; }
             } else { 
                 STATE.cart.push({...p, qty: 1}); 
                 notify(`Ajouté : ${p.name}`);
@@ -477,35 +458,25 @@
             document.getElementById('cart-count-label').innerText = `${count} Article${count>1?'s':''}`;
             
             const subtotal = STATE.cart.reduce((a,b) => a + (b.price*b.qty), 0);
-            const total = subtotal + (STATE.cart.length > 0 ? 0.5 : 0);
+            const totalFees = count * FEE_PER_ITEM;
+            const total = subtotal + totalFees;
             
             document.getElementById('cart-subtotal').innerText = subtotal.toFixed(2) + "€";
+            document.getElementById('cart-fees').innerText = totalFees.toFixed(2) + "€";
             document.getElementById('cart-total').innerText = total.toFixed(2) + "€";
             
             const container = document.getElementById('cart-items');
             if(STATE.cart.length === 0) {
-                container.innerHTML = `
-                    <div class="h-64 flex flex-col items-center justify-center text-slate-200">
-                        <i class="fas fa-shopping-basket text-6xl mb-4 opacity-20"></i>
-                        <p class="font-black uppercase tracking-widest text-[10px]">Votre panier est vide</p>
-                    </div>
-                `;
+                container.innerHTML = `<div class="h-64 flex flex-col items-center justify-center text-slate-200"><i class="fas fa-shopping-basket text-6xl mb-4 opacity-20"></i><p class="font-black uppercase tracking-widest text-[10px]">Panier vide</p></div>`;
             } else {
                 container.innerHTML = STATE.cart.map(i => `
                     <div class="flex gap-5 items-center bg-slate-50 p-5 rounded-3xl border border-slate-100 group transition-all hover:bg-white hover:shadow-xl">
-                        <div class="w-16 h-16 rounded-2xl bg-white overflow-hidden flex-shrink-0 shadow-sm">
-                            <img src="${i.image || 'https://placehold.co/100x100'}" class="w-full h-full object-cover">
-                        </div>
+                        <div class="w-16 h-16 rounded-2xl bg-white overflow-hidden flex-shrink-0 shadow-sm"><img src="${i.image || 'https://placehold.co/100'}" class="w-full h-full object-cover"></div>
                         <div class="flex-1 min-w-0">
                             <p class="font-black text-sm italic underline truncate">${i.name}</p>
-                            <div class="flex items-center gap-2 mt-1">
-                                <span class="text-[10px] font-bold text-slate-400">${i.price.toFixed(2)}€/unité</span>
-                                <span class="text-[10px] font-black text-primary-600 bg-primary-50 px-2 py-0.5 rounded-full">x${i.qty}</span>
-                            </div>
+                            <p class="text-[10px] font-bold text-slate-400 mt-1">${i.price.toFixed(2)}€ x${i.qty}</p>
                         </div>
-                        <button onclick="removeFromCart('${i.id}')" class="w-10 h-10 flex items-center justify-center text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all btn-press">
-                            <i class="fas fa-trash-alt text-xs"></i>
-                        </button>
+                        <button onclick="removeFromCart('${i.id}')" class="w-10 h-10 flex items-center justify-center text-slate-300 hover:text-red-500 rounded-xl btn-press"><i class="fas fa-trash-alt text-xs"></i></button>
                     </div>
                 `).join('');
             }
@@ -514,12 +485,11 @@
         window.removeFromCart = (id) => { 
             STATE.cart = STATE.cart.filter(x => x.id !== id); 
             updateCartUI(); 
-            notify("Article retiré", "error");
+            notify("Retiré", "error");
         };
         
         window.toggleCart = (s) => {
-            const panel = document.getElementById('cart-panel');
-            panel.style.transform = s ? 'translateX(0)' : 'translateX(100%)';
+            document.getElementById('cart-panel').style.transform = s ? 'translateX(0)' : 'translateX(100%)';
         };
 
         window.sendOrder = async () => {
@@ -528,27 +498,15 @@
                 const orderId = "ORD-" + Math.random().toString(36).substr(2, 9).toUpperCase();
                 const total = parseFloat(document.getElementById('cart-total').innerText);
                 const order = { 
-                    id: orderId, 
-                    user: STATE.user.user, 
-                    items: STATE.cart, 
-                    total, 
-                    status: 'En attente', 
-                    timestamp: Date.now(), 
-                    date: new Date().toLocaleString('fr-FR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) 
+                    id: orderId, user: STATE.user.user, items: STATE.cart, total, status: 'En attente', 
+                    timestamp: Date.now(), date: new Date().toLocaleString('fr-FR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) 
                 };
-                
                 await setDoc(doc(ordersRef, orderId), order);
-                
                 for(let item of STATE.cart) {
                     const p = STATE.products.find(x => x.id === item.id);
                     await updateDoc(doc(productsRef, p.id), { stock: p.stock - item.qty });
                 }
-                
-                STATE.cart = []; 
-                updateCartUI(); 
-                toggleCart(false); 
-                showView('orders');
-                notify("COMMANDE ENREGISTRÉE !");
+                STATE.cart = []; updateCartUI(); toggleCart(false); showView('orders'); notify("COMMANDE ENVOYÉE !");
             } catch(e) { notify("Erreur Cloud : " + e.message, "error"); }
         };
 
@@ -557,163 +515,99 @@
             const p = parseFloat(document.getElementById('adm-p').value);
             const s = parseInt(document.getElementById('adm-s').value);
             const i = document.getElementById('adm-i').value.trim();
-            if(!n || isNaN(p)) return notify("Vérifiez les informations", "error");
+            if(!n || isNaN(p)) return notify("Champs invalides", "error");
             const id = Date.now().toString();
             await setDoc(doc(productsRef, id), { id, name: n, price: p, stock: s || 0, image: i, timestamp: Date.now() });
             ['adm-n', 'adm-p', 'adm-s', 'adm-i'].forEach(id => document.getElementById(id).value = '');
-            notify("Produit injecté dans le cloud");
+            notify("Injecté !");
         };
 
         window.adminUpdateStock = async (id, delta) => {
             const p = STATE.products.find(x => x.id === id);
-            const newStock = Math.max(0, p.stock + delta);
-            await updateDoc(doc(productsRef, id), { stock: newStock });
+            await updateDoc(doc(productsRef, id), { stock: Math.max(0, p.stock + delta) });
         };
 
         window.adminUpdatePrice = async (id) => {
             const p = STATE.products.find(x => x.id === id);
-            const newPrice = prompt("Nouveau tarif Cloud pour " + p.name + " (€) :", p.price);
-            if(newPrice !== null && !isNaN(newPrice)) {
-                await updateDoc(doc(productsRef, id), { price: parseFloat(newPrice) });
-                notify("Tarif mis à jour");
-            }
+            const np = prompt("Nouveau prix (€) :", p.price);
+            if(np && !isNaN(np)) await updateDoc(doc(productsRef, id), { price: parseFloat(np) });
         };
 
         window.adminDel = async (id) => { 
-            if(confirm("Confirmer la suppression définitive de ce produit ?")) {
-                await deleteDoc(doc(productsRef, id));
-                notify("Produit supprimé", "error");
-            }
+            if(confirm("Supprimer ?")) await deleteDoc(doc(productsRef, id));
         };
 
-        window.orderDone = async (id) => { 
-            await updateDoc(doc(ordersRef, id), { status: 'Livré' }); 
-            notify("Statut : LIVRÉ !"); 
-        };
-        
-        window.orderDel = async (id) => {
-            if(confirm("Supprimer cette commande de l'historique ?")) await deleteDoc(doc(ordersRef, id));
-        };
+        window.orderDone = async (id) => { await updateDoc(doc(ordersRef, id), { status: 'Livré' }); };
+        window.orderDel = async (id) => { if(confirm("Supprimer ?")) await deleteDoc(doc(ordersRef, id)); };
 
         function renderAdmin() {
             const inv = document.getElementById('adm-inventory');
             const ord = document.getElementById('adm-orders');
-            
-            if(inv) inv.innerHTML = STATE.products.length ? STATE.products.map(p => `
-                <div class="group flex items-center gap-4 bg-slate-50 p-4 rounded-3xl border border-slate-100 transition-all hover:bg-white hover:shadow-lg">
-                    <img src="${p.image || 'https://placehold.co/100'}" class="w-12 h-12 rounded-2xl object-cover bg-white shadow-sm">
-                    <div class="flex-1 min-w-0">
-                        <p class="font-black text-xs truncate italic underline decoration-slate-200 underline-offset-2">${p.name}</p>
-                        <p class="text-[10px] font-bold text-primary-600 mt-1">${p.price.toFixed(2)}€ • Stock: <span class="${p.stock < 5 ? 'text-red-500':'text-slate-400'}">${p.stock}</span></p>
-                    </div>
+            if(inv) inv.innerHTML = STATE.products.map(p => `
+                <div class="flex items-center gap-4 bg-slate-50 p-4 rounded-3xl border border-slate-100">
+                    <img src="${p.image || 'https://placehold.co/100'}" class="w-10 h-10 rounded-xl object-cover bg-white">
+                    <div class="flex-1 truncate font-black text-xs italic">${p.name}</div>
                     <div class="flex gap-1">
-                        <button onclick="adminUpdateStock('${p.id}', -1)" class="w-9 h-9 bg-white rounded-xl text-slate-400 hover:text-red-500 shadow-sm btn-press"><i class="fas fa-minus text-[10px]"></i></button>
-                        <button onclick="adminUpdateStock('${p.id}', 1)" class="w-9 h-9 bg-white rounded-xl text-slate-400 hover:text-green-500 shadow-sm btn-press"><i class="fas fa-plus text-[10px]"></i></button>
-                        <button onclick="adminUpdatePrice('${p.id}')" class="w-9 h-9 bg-white rounded-xl text-slate-400 hover:text-primary-500 shadow-sm btn-press"><i class="fas fa-edit text-[10px]"></i></button>
-                        <button onclick="adminDel('${p.id}')" class="w-9 h-9 bg-red-50 rounded-xl text-red-300 hover:text-red-600 shadow-sm btn-press ml-1"><i class="fas fa-trash text-[10px]"></i></button>
+                        <button onclick="adminUpdateStock('${p.id}', 1)" class="w-8 h-8 bg-white rounded-lg text-slate-400 hover:text-green-500 shadow-sm"><i class="fas fa-plus text-[10px]"></i></button>
+                        <button onclick="adminDel('${p.id}')" class="w-8 h-8 bg-red-50 rounded-lg text-red-300 hover:text-red-500 shadow-sm"><i class="fas fa-trash text-[10px]"></i></button>
                     </div>
                 </div>
-            `).join('') : '<p class="text-center py-10 text-slate-300 font-bold uppercase text-[10px]">Aucun produit</p>';
-            
-            if(ord) ord.innerHTML = STATE.orders.length ? STATE.orders.map(o => `
-                <div class="bg-white p-6 rounded-4xl border-2 ${o.status === 'Livré' ? 'border-slate-50 opacity-60' : 'border-primary-100 shadow-xl shadow-primary-500/5 relative overflow-hidden'}">
-                    ${o.status !== 'Livré' ? '<div class="absolute top-0 right-0 w-2 h-full bg-primary-600"></div>' : ''}
-                    <div class="flex justify-between items-start mb-4">
-                        <div>
-                            <span class="text-[9px] font-black uppercase text-slate-300 block mb-1 tracking-widest">${o.date}</span>
-                            <span class="text-lg font-black italic underline decoration-primary-500/30">${o.user}</span>
-                        </div>
-                        <div class="text-right">
-                            <span class="text-2xl font-black text-slate-900">${o.total.toFixed(2)}€</span>
-                        </div>
+            `).join('');
+            if(ord) ord.innerHTML = STATE.orders.map(o => `
+                <div class="bg-white p-5 rounded-4xl border ${o.status === 'Livré' ? 'opacity-40 border-slate-100' : 'border-primary-100 shadow-lg'}">
+                    <div class="flex justify-between items-start mb-3">
+                        <span class="text-[9px] font-black text-slate-400 uppercase">${o.user}</span>
+                        <span class="text-xl font-black">${o.total.toFixed(2)}€</span>
                     </div>
-                    <div class="bg-slate-50 rounded-2xl p-4 mb-6 border border-slate-100">
-                        <p class="text-[10px] font-bold text-slate-500 leading-relaxed">${o.items.map(i => `<span class="text-primary-600 font-black">${i.qty}x</span> ${i.name}`).join(', ')}</p>
-                    </div>
+                    <p class="text-[10px] text-slate-500 mb-4 truncate">${o.items.map(i => i.qty+'x '+i.name).join(', ')}</p>
                     <div class="flex gap-2">
-                        ${o.status === 'En attente' ? 
-                            `<button onclick="orderDone('${o.id}')" class="flex-1 py-4 bg-primary-600 text-white text-[10px] font-black rounded-2xl uppercase tracking-[0.2em] shadow-lg shadow-primary-500/20 btn-press">Marquer Livré</button>` : 
-                            `<div class="flex-1 py-4 bg-green-50 text-green-500 text-[10px] font-black rounded-2xl uppercase tracking-[0.2em] text-center border border-green-100">Commande Livrée</div>`
-                        }
-                        <button onclick="orderDel('${o.id}')" class="w-14 bg-slate-100 rounded-2xl text-slate-300 hover:text-red-500 hover:bg-red-50 transition-colors btn-press"><i class="fas fa-trash-alt text-sm"></i></button>
+                        ${o.status === 'En attente' ? `<button onclick="orderDone('${o.id}')" class="flex-1 py-3 bg-primary-600 text-white text-[9px] font-black rounded-xl uppercase tracking-widest">Livrer</button>` : `<div class="flex-1 py-3 text-center text-green-500 text-[9px] font-black uppercase">Livré</div>`}
+                        <button onclick="orderDel('${o.id}')" class="w-10 bg-slate-50 rounded-xl text-slate-300"><i class="fas fa-trash-alt text-xs"></i></button>
                     </div>
                 </div>
-            `).join('') : '<p class="text-center py-10 text-slate-300 font-bold uppercase text-[10px]">Aucun flux entrant</p>';
+            `).join('');
         }
 
         function renderMyOrders() {
             const mine = STATE.orders.filter(o => o.user === STATE.user?.user);
             const container = document.getElementById('my-orders');
             if(!container) return;
-            
             container.innerHTML = mine.length ? mine.map(o => `
-                <div class="group bg-white p-8 rounded-5xl border border-slate-100 shadow-sm relative overflow-hidden transition-all hover:shadow-xl">
-                    <div class="flex justify-between items-center mb-6">
-                        <div class="flex items-center gap-3">
-                            <div class="w-2 h-2 rounded-full ${o.status === 'Livré' ? 'bg-green-500' : 'bg-primary-500 animate-pulse'}"></div>
-                            <span class="text-[10px] font-black text-slate-300 uppercase tracking-widest">${o.date}</span>
-                        </div>
-                        <div class="px-5 py-2 rounded-full ${o.status === 'Livré' ? 'bg-green-50 text-green-600' : 'bg-primary-50 text-primary-600'} text-[10px] font-black uppercase tracking-widest border ${o.status === 'Livré' ? 'border-green-100' : 'border-primary-100'}">
-                            ${o.status}
-                        </div>
+                <div class="bg-white p-6 rounded-5xl border border-slate-100 shadow-sm mb-4">
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="text-[10px] font-black text-slate-300 uppercase">${o.date}</span>
+                        <span class="px-3 py-1 rounded-full ${o.status === 'Livré' ? 'bg-green-50 text-green-600' : 'bg-primary-50 text-primary-600'} text-[8px] font-black uppercase tracking-widest border border-current opacity-70">${o.status}</span>
                     </div>
-                    <div class="mb-6">
-                        <p class="font-bold text-base text-slate-600 italic leading-relaxed underline decoration-slate-100">${o.items.map(i => i.qty+'x '+i.name).join(', ')}</p>
-                    </div>
-                    <div class="flex items-end justify-between pt-6 border-t border-slate-50">
-                        <div class="flex flex-col">
-                            <span class="text-[9px] font-black text-slate-300 uppercase tracking-[0.2em] mb-1">Montant Transaction</span>
-                            <span class="text-3xl font-black text-slate-900 italic underline decoration-primary-500/20 underline-offset-8">${o.total.toFixed(2)}€</span>
-                        </div>
-                        <div class="flex flex-col items-end opacity-20 group-hover:opacity-100 transition-opacity">
-                            <i class="fas fa-cloud text-3xl text-slate-200"></i>
-                            <span class="text-[7px] font-black uppercase tracking-widest text-slate-400 mt-2">Verified Cloud Receipt</span>
-                        </div>
+                    <p class="text-sm font-bold text-slate-600 italic mb-4">${o.items.map(i => i.qty+'x '+i.name).join(', ')}</p>
+                    <div class="pt-4 border-t border-slate-50 flex justify-between items-center">
+                        <span class="text-[9px] font-black text-slate-300 uppercase tracking-widest">Total Payé</span>
+                        <span class="text-2xl font-black italic underline decoration-primary-500/20">${o.total.toFixed(2)}€</span>
                     </div>
                 </div>
-            `).join('') : `
-                <div class="py-32 text-center bg-white rounded-5xl border-2 border-dashed border-slate-100">
-                    <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-200">
-                        <i class="fas fa-ghost text-2xl"></i>
-                    </div>
-                    <p class="text-slate-300 font-black uppercase text-[10px] tracking-[0.2em] italic">Rien par ici, passez votre première commande !</p>
-                </div>
-            `;
+            `).join('') : '<p class="text-center py-10 text-slate-300 text-[10px] font-black uppercase italic">Aucune commande</p>';
         }
 
         window.notify = (m, type="success") => {
             const n = document.createElement('div');
-            n.className = `px-8 py-5 rounded-3xl ${type==='error'?'bg-red-500 shadow-red-500/20':'bg-slate-900 shadow-slate-900/20'} text-white font-black text-[10px] uppercase tracking-[0.2em] shadow-2xl transform transition-all duration-500 -translate-y-4 opacity-0 flex items-center gap-3 border border-white/10`;
+            n.className = `px-8 py-5 rounded-3xl ${type==='error'?'bg-red-500':'bg-slate-900'} text-white font-black text-[10px] uppercase tracking-[0.2em] shadow-2xl transform transition-all duration-500 -translate-y-4 opacity-0 flex items-center gap-3`;
             n.innerHTML = `<i class="fas ${type==='error'?'fa-exclamation-triangle':'fa-check-circle'}"></i> ${m}`;
             document.getElementById('notifier').appendChild(n);
-            
-            // Trigger animation
-            setTimeout(() => { n.classList.remove('-translate-y-4', 'opacity-0'); }, 10);
-            
-            setTimeout(() => { 
-                n.classList.add('translate-y-4', 'opacity-0'); 
-                setTimeout(() => n.remove(), 500); 
-            }, 3000);
+            setTimeout(() => n.classList.remove('-translate-y-4', 'opacity-0'), 10);
+            setTimeout(() => { n.classList.add('translate-y-4', 'opacity-0'); setTimeout(() => n.remove(), 500); }, 3000);
         };
 
         function showLoaderError(msg) {
-            const err = document.getElementById('loader-error');
-            err.innerText = "CRITICAL ERROR: " + msg;
-            err.classList.remove('hidden');
-            document.getElementById('loader-status').innerText = "Cloud System Failure";
-            document.getElementById('loader-icon').classList.add('border-red-500', 'border-t-red-200');
+            document.getElementById('loader-error').innerText = msg;
+            document.getElementById('loader-error').classList.remove('hidden');
         }
 
         function hideLoader() {
-            const l = document.getElementById('loader');
-            l.style.opacity = '0';
-            setTimeout(() => { 
-                l.style.display = 'none'; 
-                document.getElementById('main-content').classList.remove('hidden'); 
-            }, 600);
+            document.getElementById('loader').style.opacity = '0';
+            setTimeout(() => { document.getElementById('loader').style.display = 'none'; document.getElementById('main-content').classList.remove('hidden'); }, 600);
         }
 
         boot();
     </script>
 </body>
 </html>
+
